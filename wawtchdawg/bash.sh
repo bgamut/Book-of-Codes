@@ -1,6 +1,6 @@
-git pull
+git pull origin master
 git add .
 git commit -m "updated responsiveness to bot"
+git push -f origin master
 git push heroku master
-git push origin master
 heroku logs
