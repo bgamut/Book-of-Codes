@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # use a Tkinter label as a panel/frame with a background image
 # note that Tkinter only reads gif and ppm images
@@ -7,9 +7,9 @@
 # give Tkinter a namespace to avoid conflicts with PIL
 # (they both have a class named Image)
 
-import Tkinter as tk
+import tkinter as tk
 from PIL import Image, ImageTk
-from ttk import Frame, Button, Style
+from tkinter.ttk import Frame, Button, Style
 import time
 
 class Example():
@@ -38,18 +38,18 @@ class Example():
         self.panel1 = tk.Label(self.root, image=self.image1)
         self.display = self.image1
         self.panel1.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
-        print "Display image1"
+        print ("Display image1")
         self.root.after(10, self.update_image)
         self.root.mainloop()
-
+    
     def update_image(self):
         if self.display == self.image1:
             self.panel1.configure(image=self.image2)
-            #print "Display image2"
+            #print ("Display image2")
             self.display = self.image2
         else:
             self.panel1.configure(image=self.image1)
-            #print "Display image1"
+            #print ("Display image1")
             self.display = self.image1
         self.root.after(10, self.update_image)       # Set to call again in 10 milli seconds
 
@@ -58,4 +58,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
