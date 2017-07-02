@@ -119,12 +119,14 @@ def BuildDrawFrame(): # this gets called when needed, rather than on import
 
             
             # Add the Canvas
-            NC = NavCanvas.NavCanvas(self,
-                                     Debug = 0,
-                                     BackgroundColor = "DARK SLATE BLUE")
-
-            self.Canvas = NC.Canvas # reference the contained FloatCanvas
-
+            # with navigation
+            #NC = NavCanvas.NavCanvas(self,Debug = 0,BackgroundColor = "DARK SLATE BLUE")
+            #self.Canvas = NC.Canvas # reference the contained FloatCanvas
+            #without navigation
+            NC = FloatCanvas.FloatCanvas(self,Debug = 0,BackgroundColor = "DARK SLATE BLUE")
+            self.Canvas = NC
+            # reference the contained FloatCanvas
+            
             self.MsgWindow = wx.TextCtrl(self, wx.ID_ANY,
                                          "Look Here for output from events\n",
                                          style = (wx.TE_MULTILINE |

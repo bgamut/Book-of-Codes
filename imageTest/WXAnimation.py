@@ -192,56 +192,6 @@ class DrawFrame(wx.Frame):
         print "running the movie took %f seconds"%(clock() - start)
 
 class DemoApp(wx.App):
-    """
-        How the demo works:
-        
-        Under the Draw menu, there are three options:
-        
-        *Draw Test: will put up a picture of a bunch of randomly generated
-        objects, of each kind supported.
-        
-        *Draw Map: will draw a map of the world. Be patient, it is a big map,
-        with a lot of data, and will take a while to load and draw (about 10 sec
-        on my 450Mhz PIII). Redraws take about 2 sec. This demonstrates how the
-        performance is not very good for large drawings.
-        
-        *Clear: Clears the Canvas.
-        
-        Once you have a picture drawn, you can zoom in and out and move about
-        the picture. There is a tool bar with three tools that can be
-        selected.
-        
-        The magnifying glass with the plus is the zoom in tool. Once selected,
-        if you click the image, it will zoom in, centered on where you
-        clicked. If you click and drag the mouse, you will get a rubber band
-        box, and the image will zoom to fit that box when you release it.
-        
-        The magnifying glass with the minus is the zoom out tool. Once selected,
-        if you click the image, it will zoom out, centered on where you
-        clicked. (note that this takes a while when you are looking at the map,
-        as it has a LOT of lines to be drawn. The image is double buffered, so
-        you don't see the drawing in progress)
-        
-        The hand is the move tool. Once selected, if you click and drag on the
-        image, it will move so that the part you clicked on ends up where you
-        release the mouse. Nothing is changed while you are dragging. The
-        drawing is too slow for that.
-        
-        I'd like the cursor to change as you change tools, but the stock
-        wx.Cursors didn't include anything I liked, so I stuck with the
-        pointer. Pleae let me know if you have any nice cursor images for me to
-        use.
-        
-        
-        Any bugs, comments, feedback, questions, and especially code are welcome:
-        
-        -Chris Barker
-        
-        ChrisHBarker@home.net
-        http://members.home.net/barkerlohmann
-        
-        """
-    
     def OnInit(self):
         frame = DrawFrame(None,
                           title="Simple Drawing Window",
