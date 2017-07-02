@@ -12,12 +12,14 @@ in_file='squwbs1.gif'
 out_file='myImage.byte'
 t=Tk()
 t.title("Transparency")
-canvas=Canvas(t,bg='black',width=200,height=200)
-canvas.pack()
 img=PIL.Image.open(in_file)
 photo=PIL.ImageTk.PhotoImage(img)
+canvas=Canvas(t,bg='black',width=200,height=200)
+canvas.create_image(100,100,image=photo)
+canvas.pack()
 label=Label(t,image=photo)
 label.image=photo
+#label.text="test"
 label.pack()
 
 with open(in_file, 'rb') as file:
