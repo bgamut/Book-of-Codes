@@ -4,7 +4,7 @@ from numpy import *
 import sys
 from wx.lib.floatcanvas import FloatCanvas
 from random import randint, random,uniform
-from math import cos,sin,sqrt,pi
+from math import cos,sin,sqrt,pi,fabs
 from time import sleep
 
 
@@ -17,6 +17,11 @@ class DrawFrame(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
         self.tick=0
         self.BPM=90.0
+        self.a=0
+        self.b=0
+        self.c1=0
+        self.c2=0
+        self.d=0
         self.pppoints=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
         self.ppoints=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
         self.points=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
@@ -30,11 +35,11 @@ class DrawFrame(wx.Frame):
         self.Bind(wx.EVT_TIMER,self.OnTimer)
         self.Canvas = FloatCanvas.FloatCanvas(self,-1,(200,200),
                                           Debug = False,
-                                          BackgroundColor = "WHITE")
+                                          BackgroundColor = "BLACK")
         self.Canvas.NumBetweenBlits = 1000
         self.OnTimer(None)
         self.timer=wx.Timer(self,-1)
-        self.timer.Start(4)
+        self.timer.Start(7)
         self.points=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
         self.Show(True)
         self.DrawTest(None)
@@ -62,31 +67,33 @@ class DrawFrame(wx.Frame):
         self.ticknum=self.ticknum+1
     def DrawTest(self,event = None):
         w, h = self.GetClientSize()
-        a=uniform(0,2*pi)
+        self.a=uniform(0,2*pi)
         #b=uniform(0,100.0)
         #b=sqrt(w*w+h*h)/3
-        b=min(w,h)/2
-        c=uniform(0,min(w,h)/2)
-        point=(cos(a)*c,sin(a)*c)
+        self.b=min(w,h)/2
+        self.c1=uniform(0,min(w,h)/2)
+        self.d=sqrt(fabs(self.c1*self.c2))
+        point=(cos(self.a)*self.c1,sin(self.a)*self.c1)
         self.tick += 1
         self.points.append(point)
         self.points.pop(0)
 
-        if(self.tick%8==0):
-            self.Canvas.AddCircle((0,0), b*(1.0+sqrt(5))/4.0, LineWidth = b/2.0,LineColor = "BLACK",FillColor = "WHITE")
-
-            self.Canvas.AddSpline((self.pppoints[2],self.pppoints[3],self.pppoints[4],self.pppoints[5],self.pppoints[6],self.pppoints[7],self.pppoints[8],self.pppoints[9],self.ppoints[1],self.ppoints[2],self.ppoints[3]), LineWidth=5,LineColor="BLACK")
-            self.Canvas.AddSpline((self.pppoints[2],self.pppoints[3],self.pppoints[4],self.pppoints[5],self.pppoints[6],self.pppoints[7],self.pppoints[8],self.pppoints[9],self.ppoints[1],self.ppoints[2],self.ppoints[3]), LineWidth=5,LineColor="#AAAAAA")
+        if(self.tick==8):
+            self.Canvas.AddCircle((0,0), self.b*(1.0+sqrt(5))/2.0+self.d/12.0, LineWidth = 2.0,LineColor = "BLACK",FillColor = "WHITE")
             self.Canvas.AddSpline((self.ppoints[2],self.ppoints[3],self.ppoints[4],self.ppoints[5],self.ppoints[6],self.ppoints[7],self.ppoints[8],self.ppoints[9],self.points[0],self.points[1]), LineWidth=8,LineColor="BLACK")
-            self.Canvas.AddSpline((self.ppoints[2],self.ppoints[3],self.ppoints[4],self.ppoints[5],self.ppoints[6],self.ppoints[7],self.ppoints[8],self.ppoints[9],self.points[0],self.points[1]), LineWidth=7,LineColor="#FAFAFA")
             self.Canvas.AddSpline((self.points[0],self.points[1],self.points[2],self.points[3],self.points[4],self.points[5],self.points[6],self.points[7],self.points[8],self.points[9]), LineWidth=8,LineColor="BLACK")
+            self.Canvas.AddSpline((self.pppoints[2],self.pppoints[3],self.pppoints[4],self.pppoints[5],self.pppoints[6],self.pppoints[7],self.pppoints[8],self.pppoints[9],self.ppoints[1],self.ppoints[2],self.ppoints[3]), LineWidth=5,LineColor="#AAAAAA")
+            self.Canvas.AddSpline((self.ppoints[2],self.ppoints[3],self.ppoints[4],self.ppoints[5],self.ppoints[6],self.ppoints[7],self.ppoints[8],self.ppoints[9],self.points[0],self.points[1]), LineWidth=7,LineColor="#FAFAFA")
+            self.Canvas.AddCircle((0,0), (self.c1/12.0+self.b*(1.0+sqrt(5))/6.0), LineWidth = 2,LineColor = "BLACK",FillColor = "WHITE")
             self.Canvas.AddSpline((self.points[0],self.points[1],self.points[2],self.points[3],self.points[4],self.points[5],self.points[6],self.points[7],self.points[8],self.points[9]), LineWidth=6,LineColor="WHITE")
+
             self.Canvas.Draw(Force=True)
             for i in range(len(self.points)):
                 self.ppoints[i]=self.points[i]
                 self.pppoints[i]=self.ppoints[i]
             #self.Canvas.AddPointSet(self.points,Color = "WHITE", Diameter = 4)
-
+            self.c2=self.c1
+            self.tick=0
         #print(self.points)
 
 
