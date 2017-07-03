@@ -1,6 +1,7 @@
 from time import clock,sleep
 import wx
 from numpy import *
+import numpy as np
 import sys
 from wx.lib.floatcanvas import FloatCanvas
 from random import randint, random,uniform
@@ -39,7 +40,7 @@ class DrawFrame(wx.Frame):
         self.Canvas.NumBetweenBlits = 1000
         self.OnTimer(None)
         self.timer=wx.Timer(self,-1)
-        self.timer.Start(7)
+        self.timer.Start(2)
         self.points=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
         self.Show(True)
         self.DrawTest(None)
@@ -78,7 +79,7 @@ class DrawFrame(wx.Frame):
         self.points.append(point)
         self.points.pop(0)
 
-        if(self.tick==8):
+        if(self.tick==16):
             self.Canvas.AddCircle((0,0), self.b*(1.0+sqrt(5))/2.0+self.d/12.0, LineWidth = 2.0,LineColor = "BLACK",FillColor = "WHITE")
             self.Canvas.AddSpline((self.ppoints[2],self.ppoints[3],self.ppoints[4],self.ppoints[5],self.ppoints[6],self.ppoints[7],self.ppoints[8],self.ppoints[9],self.points[0],self.points[1]), LineWidth=8,LineColor="BLACK")
             self.Canvas.AddSpline((self.points[0],self.points[1],self.points[2],self.points[3],self.points[4],self.points[5],self.points[6],self.points[7],self.points[8],self.points[9]), LineWidth=8,LineColor="BLACK")
@@ -95,8 +96,6 @@ class DrawFrame(wx.Frame):
             self.c2=self.c1
             self.tick=0
         #print(self.points)
-
-
         wx.GetApp().Yield(onlyIfNeeded=True)
 
 
