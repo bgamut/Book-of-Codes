@@ -4,9 +4,10 @@ from numpy import *
 import sys
 from wx.lib.floatcanvas import FloatCanvas
 from random import randint, random,uniform
-import math
+from math import cos,sin,sqrt
+from time import sleep
 
-points=[(0,0),(0,0),(0,0),(0,0),(0,0)]
+
 class tick():
     def __init__(self):
         self.number=0
@@ -15,7 +16,9 @@ class tick():
 class DrawFrame(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
         self.tick=0
-        self.points=[]
+        self.pppoints=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
+        self.ppoints=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
+        self.points=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
         super(DrawFrame, self).__init__(parent,*args, **kwargs)
         
         ## Set up the MenuBar
@@ -29,8 +32,8 @@ class DrawFrame(wx.Frame):
         self.Canvas.NumBetweenBlits = 1000
         self.OnTimer(None)
         self.timer=wx.Timer(self,-1)
-        self.timer.Start(2)
-        self.points=[]
+        self.timer.Start(3)
+        self.points=[(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
         self.Show(True)
         self.DrawTest(None)
 
@@ -40,18 +43,15 @@ class DrawFrame(wx.Frame):
     
     def ZoomToFit(self,event):
         self.Canvas.ZoomToBB()
-    
-    def Clear(self,event = None):
-        #self.Canvas.ClearAll()
-        self.Canvas.InitAll()
-        self.Canvas.Draw()
+
     
     def OnQuit(self,event):
         self.Close(True)
 
     def OnTimer(self,event):
-        self.Clear()
+        self.Canvas.InitAll()
         self.DrawTest()
+        #wx.GetApp().Yield(onlyIfNeeded=True)
         #self.Refresh()
     
     def OnCloseWindow(self, event):
@@ -59,20 +59,31 @@ class DrawFrame(wx.Frame):
     def tick(self):
         self.ticknum=self.ticknum+1
     def DrawTest(self,event = None):
+        w, h = self.GetClientSize()
         a=uniform(0,6.29)
-        b=uniform(0,100.0)
-        point=(math.cos(a)*b,math.sin(a)*b)
+        #b=uniform(0,100.0)
+        b=sqrt(w*w+h*h)/3
+        point=(cos(a)*b,sin(a)*b)
         self.tick += 1
-        if len(self.points)>4:
-            if(self.tick%5==0):
-                self.points.pop(0)
-                self.Canvas.AddSpline((self.points[0],self.points[1],self.points[2],self.points[3],self.points[4]), LineWidth=4,LineColor="WHITE")
         self.points.append(point)
-        print(self.points)
-        c=self.points
-        Canvas = self.Canvas
-        #self.Canvas.AddPointSet(c,Color = "WHITE", Diameter = 4, InForeground = True)
-        self.Canvas.Draw(Force=True)
+        self.points.pop(0)
+
+        if(self.tick%5==0):
+            self.Canvas.AddSpline(((0,0),self.pppoints[2],self.pppoints[3],self.pppoints[4],self.pppoints[5],self.pppoints[6],self.pppoints[7],self.pppoints[8],self.pppoints[9],self.ppoints[1],self.ppoints[2],), LineWidth=3,LineColor="#AAAAAA")
+            self.Canvas.AddCircle((0,0), b*0.618, LineWidth = b*0.618,LineColor = "BLACK",FillColor = "BLACK")
+            self.Canvas.AddSpline((self.ppoints[2],self.ppoints[3],self.ppoints[4],self.ppoints[5],self.ppoints[6],self.ppoints[7],self.ppoints[8],self.ppoints[9],self.points[0],self.points[1]), LineWidth=7,LineColor="#FAFAFA")
+            self.Canvas.AddSpline((self.points[0],self.points[1],self.points[2],self.points[3],self.points[4],self.points[5],self.points[6],self.points[7],self.points[8],self.points[9]), LineWidth=9,LineColor="WHITE")
+
+            self.Canvas.Draw(Force=True)
+            for i in range(len(self.points)):
+                self.ppoints[i]=self.points[i]
+                #self.pppoints[i]=self.ppoints[i]
+            #self.Canvas.AddPointSet(self.points,Color = "WHITE", Diameter = 4)
+
+        #print(self.points)
+
+
+        wx.GetApp().Yield(onlyIfNeeded=True)
 
 
 
