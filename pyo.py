@@ -1,0 +1,22 @@
+import pyo
+s=pyo.Server(nchnls=2).boot()
+s.start()
+left_in=pyo.Input([0],mul=0.5)
+right_in=pyo.Input([1],mul=0.5)
+a=left_in+right_in
+b=pyo.Chorus(a)
+c=pyo.ButLP(b,freq=75)
+d1=pyo.ButHP(c,175)
+d2=pyo.ButHP(d1,175)
+d3=pyo.ButHP(d2,175)
+d4=pyo.ButHP(d3,75)
+d5=pyo.ButHP(d4,75)
+e=pyo.ButBR(d5,7000)
+left_only=left_in*(0.0625)
+right_only=right_in*(0.0625)
+left_out=left_only+e
+right_out=right_only+e
+left_out_normalized=pyo.Tanh(left_out)
+right_out_normalized=pyo.Tanh(right_out)
+left_out_normalized.out([0])
+right_out_normalized.out([1])
