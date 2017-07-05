@@ -7,6 +7,7 @@ from wx.lib.floatcanvas import FloatCanvas
 from random import randint, random,uniform
 from math import cos,sin,sqrt,pi,fabs
 from time import sleep
+from pyo import *
 
 
 class tick():
