@@ -12,93 +12,85 @@
           background-attachment: scroll;
           height: 100vh;
           z-index:0;
+          
       }
         #dox{
+            
             width:100%;
             height:100%
+            perspective:80px;
+            
         }
   
-        #mainDiv{
-            width:0px;
-            height:100%;
-            perspective:800px;
-            margin-top:25%;
-            margin-bottom:25%;
-            margin-left:auto;
-            margin-right:auto;
-            transform:translateZ(100px);
-            
-      
-        }
         #boxDiv
         {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            transform-style: preserve-3d;
-          
-            animation: rotate 6s linear infinite;
             
+            transform-style: preserve-3d;
+            animation: rotate 60s linear infinite;
         }
         #boxDiv div
         {
             position: absolute;
-            opacity:0.5;
+            opacity:1.0;
             color: white;
             font: 13px impact;
+            margin:auto;
         }
         #front
         {
             transform: translateZ(50px) translateX(-50px)translateY(-50px);
-            background: white;
-            border:5px solid white;
+            background: transparent;
+            border:5px solid black;
             width: 90px;
             height: 90px;
         }
         #back
         {
             transform: rotateY(180deg) translateZ(50px) translateX(50px)translateY(-50px);
-            background: white;
-            border:5px solid white;
+            background: transparent;
+            border:5px solid black;
             width: 90px;
             height: 90px;
         }
         #left
         {
             transform: rotateY(90deg) translateZ(0px) translateX(0px) translateY(-50px);
-            background: white;
-            border:5px solid white;
+            background: transparent;
+            border:5px solid black;
             width: 90px;
             height: 90px;
         }
         #right
         {
             transform: rotateY(270deg) translateZ(100px) translateY(-50px);
-            background: white;
-            border:5px solid white;
+            background: transparent;
+            border:5px solid black;
             width: 90px;
             height: 90px;
         }
         #top
         {
             transform: rotateX(90deg) translateZ(0px) translateX(-50px) translateY(0px);
-            background: white;
-            border:5px solid white;
+            background: transparent;
+            border:5px solid black;
             width: 90px;
             height: 90px;
         }
         #bottom
         {
             transform: rotateX(270deg) translateZ(-100px) translateX(-50px);
-            background: white;
-            border:5px solid white;
+            background: transparent;
+            border:5px solid black;
             width: 90px;
             height: 90px;
         }
   @keyframes rotate
   {
-      0% {transform: rotateX(0) rotateY(0);}
-      100%{transform: rotateX(360deg)rotateY(360deg);}
+      0% {transform: rotateY(0) rotateX(0)rotateZ(0);}
+      25% {transform: rotateY(180deg) rotateX(90deg)rotateZ(360deg);}
+      50% {transform: rotateY(360deg) rotateX(180deg)rotateZ(720deg);}
+      75% {transform: rotateY(540deg) rotateX(270deg)rotateZ(1080deg);}
+      100%{transform: rotateY(720deg)rotateX(360deg)rotateZ(1440deg);}
   }
 
 
@@ -8344,12 +8336,27 @@
                                                                                                          });
                                                                                         };
                                                                                         })( jQuery, window );
-                        
+                                                                                      jQuery.fn.cent = function () {
+                                                                                      this.css("position","absolute");
+                                                                                      this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) +
+                                                                                                               $(window).scrollTop()) + "px");
+                                                                                      this.css("margin-left", Math.max(0, (($(parent).outerWidth()) / 2) +
+                                                                                                                $(window).scrollLeft()) + "px");
+                                                                                      return this;
+                                                                                      }
+                                                                                      
+                                                                                      $(window).ready(function(){
+                                                                                                       $('#boxDiv').cent();
+                                                                                                       console.log(Math.max(0, (($(parent).outerWidth()) / 2) +
+                                                                                                                            $(window).scrollLeft()) + "px")});
+                                                                                      $(window).resize(function(){
+                                                                                                       $('#boxDiv').cent();
+                                                                                                       console.log(Math.max(0, (($(parent).outerWidth()) / 2) +
+                                                                                                                   $(window).scrollLeft()) + "px")});
   </script>
 </head>
 <body>
 <div id="dox">
-    <div id="mainDiv">
         <div id="boxDiv">
             <div id="front"><div id='test'></div></div>
             <div id="back"></div>
@@ -8358,7 +8365,6 @@
             <div id="top"></div>
             <div id="bottom"></div>
         </div>
-    </div>
 </div>
 
 <h1></h1>
