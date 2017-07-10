@@ -7,7 +7,30 @@ from wx.lib.floatcanvas import FloatCanvas
 from random import randint, random,uniform
 from math import cos,sin,sqrt,pi,fabs
 from time import sleep
-from pyo import *
+import pyo
+
+s=pyo.Server(nchnls=2).boot()
+s.start()
+left_in=pyo.Input([0],mul=0.5)
+right_in=pyo.Input([1],mul=0.5)
+a=left_in+right_in
+b=pyo.Chorus(a)
+c=pyo.ButLP(b,freq=75)
+d1=pyo.ButHP(c,175)
+d2=pyo.ButHP(d1,175)
+d3=pyo.ButHP(d2,175)
+d4=pyo.ButHP(d3,75)
+d5=pyo.ButHP(d4,75)
+e=pyo.ButBR(d5,7000)
+left_only=left_in*(0.0625)
+right_only=right_in*(0.0625)
+left_out=left_only+e
+right_out=right_only+e
+left_out_normalized=pyo.Tanh(left_out)
+right_out_normalized=pyo.Tanh(right_out)
+left_out_normalized.out([0])
+right_out_normalized.out([1])
+Follower=pyo.PeakAmp((left_out_normalized+right_out_normalized)/2.0)
 
 
 class tick():
@@ -73,7 +96,8 @@ class DrawFrame(wx.Frame):
         #b=uniform(0,100.0)
         #b=sqrt(w*w+h*h)/3
         self.b=min(w,h)/2
-        self.c1=uniform(0,min(w,h)/2)
+        #self.c1=uniform(0,min(w,h)/2)
+        self.c1=Follower.get()*10.0*min(w,h)/2
         self.d=sqrt(fabs(self.c1*self.c2))
         point=(cos(self.a)*self.c1,sin(self.a)*self.c1)
         self.tick += 1
@@ -96,7 +120,8 @@ class DrawFrame(wx.Frame):
             #self.Canvas.AddPointSet(self.points,Color = "WHITE", Diameter = 4)
             self.c2=self.c1
             self.tick=0
-        #print(self.points)
+
+        #print(Follower.get()*10.0)
         wx.GetApp().Yield(onlyIfNeeded=True)
 
 
