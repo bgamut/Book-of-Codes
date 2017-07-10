@@ -87,6 +87,8 @@ class DrawFrame(wx.Frame):
         #self.Refresh()
     
     def OnCloseWindow(self, event):
+        #s.stop()
+        sleep(2.00)
         self.Destroy()
     def tick(self):
         self.ticknum=self.ticknum+1
