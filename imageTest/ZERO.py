@@ -74,6 +74,8 @@ right=pyo.Input([1],mul=0.5)
 left_in=pyo.Gate(left,risetime=0.015)
 right_in=pyo.Gate(right,risetime=0.015)
 a=left_in+right_in
+a_now=pyo.PeakAmp(a)
+print(a_now)
 b=pyo.Chorus(a)
 c=pyo.ButLP(b,freq=75)
 d1=pyo.ButHP(c,175)

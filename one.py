@@ -13,6 +13,7 @@ import threading
 import AutoTune
 def zerolist(n):
     return [0.0]*n
+
 class Autotune(pyo.PyoObject):
     def __init__(self, input, mul=1,add=0, FS=44100.0,CHUNK=256,SCALE_ROTATE=0,LFO_QUANT=0,CONCERT_A=440.0,FIXED_PITCH=2.0,FIXED_PULL=0.1,CORR_STR=1.0,CORR_SMOOTH=0.0,PITCH_SHIFT=1.0,LFO_DEPTH=0.1,LFO_RATE=1.0,LFO_SHAPE=0.0,LFO_SYMM=0.0,FORM_WARP=0.0,MIX=1.0,KEY="c"):
         self.Signal=[]
@@ -94,6 +95,8 @@ rd5=pyo.ButLP(rd4,7000)
 re=pyo.ButBR(rd5,3880)
 rf=pyo.ButBR(re,7000)
 mid=left_in+right_in
+mid_now=pyo.PeakAmp(mid)
+
 mid_low=pyo.ButLP(mid,freq=40,mul=2)
 left_out=mid_low+lf
 right_out=mid_low+rf
@@ -101,8 +104,12 @@ right_out=mid_low+rf
 #right_tuned=Autotune(right_out)
 #left_tuned=left_out
 #right_tuned=right_out
-left_out_normalized=pyo.Tanh(left_out,mul=10.0)
-right_out_normalized=pyo.Tanh(right_out,mul=10.0)
+if(mid_now.get()>0.25):
+    left_out_normalized=pyo.Tanh(left_out,mul=10.0*1.0/mid_now.get())
+    right_out_normalized=pyo.Tanh(right_out,mul=10.0*1.0/mid_now.get())
+else:
+    left_out_normalized=pyo.Tanh(left_out,mul=10.0)
+    right_out_normalized=pyo.Tanh(right_out,mul=10.0)
 left_out_normalized.out([0])
 right_out_normalized.out([1])
 Follower_left=pyo.PeakAmp(left_out_normalized,mul=(1.0/12.0))
@@ -186,6 +193,7 @@ class DrawFrame(wx.Frame):
         self.d=sqrt(fabs(self.left*self.right))
         point=(self.a*(self.right/sqrt(2.0)-self.left/sqrt(2)),self.a*(self.right/sqrt(2.0)+self.left/sqrt(2)))
         #print(left_out_normalized.get())
+        print(mid_now.get())
         self.tick += 1
         self.points.append(point)
         self.points.pop(0)
