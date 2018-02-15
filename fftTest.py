@@ -17,11 +17,11 @@ def split_fft(data):
     sidefft=np.arange(256)
     resultfftsq=np.zeros(shape=(256,2))
     for i in data[1]:
-        #a=(data[1][i][0]/2)/max(data[1].max(),data[1].min(),key=abs)
-        a=(data[1][i][0]/2)
+        a=(data[1][i][0]/2)/max(data[1].max(),data[1].min(),key=abs)
+        #a=(data[1][i][0]/2)
         a.reshape((1,-1))
-        #b = (data[1][i][1]/2)/max(data[1].max(),data[1].min(),key=abs)
-        b = (data[1][i][1]/2)
+        b = (data[1][i][1]/2)/max(data[1].max(),data[1].min(),key=abs)
+        #b = (data[1][i][1]/2)
         b.reshape((1,-1))
         mono[i]=a+b
         leftOnly[i]=a-b
@@ -29,9 +29,13 @@ def split_fft(data):
     monofft=fft(mono,n=256)
     sidefft=fft(leftOnly,n=256)
     for i in monofft:
-        a=monofft[i][0]*monofft[i][0]+monofft[i][1]*monofft[i][1]
-        b=sidefft[i][0]*sidefft[i][0]+sidefft[i][1]*sidefft[i][1]
-        resultfftsq[i]=[a,b]
+        a1=monofft[i][0]
+        a2=monofft[i][1]
+        a3=(a1*a1+a2*a2)*max(data[1].max(),data[1].min(),key=abs)
+        b1=sidefft[i][0]
+        b2=sidefft[i][1]
+        b3=(b1*b1+b2*b2)*max(data[1].max(),data[1].min(),key=abs)
+        resultfftsq[i]=[a3,b3]
     print("song analysis complete")
     return resultfftsq
 
@@ -43,11 +47,11 @@ def deconvolve(data,resultfftsq):
     sidefft=np.arange(256)
     ir=np.arange(256)
     for i in data[1]:
-        #a=(data[1][i][0]/2)/max(data[1].max(),data[1].min(),key=abs)
-        a=(data[1][i][0]/2)
+        a=(data[1][i][0]/2)/max(data[1].max(),data[1].min(),key=abs)
+        #a=(data[1][i][0]/2)
         a.reshape((1,-1))
-        #b = (data[1][i][1]/2)/max(data[1].max(),data[1].min(),key=abs)
-        b = (data[1][i][1]/2)
+        b = (data[1][i][1]/2)/max(data[1].max(),data[1].min(),key=abs)
+        #b = (data[1][i][1]/2)
         b.reshape((1,-1))
         mono[i]=a+b
         leftOnly[i]=a-b
@@ -55,11 +59,15 @@ def deconvolve(data,resultfftsq):
     monofft=fft(mono,n=256)
     sidefft=fft(leftOnly,n=256)
     for i in monofft:
-        a=monofft[i][0]*monofft[i][0]+monofft[i][1]*monofft[i][1]
-        b=sidefft[i][0]*sidefft[i][0]+sidefft[i][1]*sidefft[i][1]
-        c=resultfftsq[0]/a
-        d=resultfftsq[1]/b
-        ir[i]=[a,b]
+        a1=monofft[i][0]
+        a2=monofft[i][1]
+        a3=a1*a1+a2*a2
+        b1=sidefft[i][0]
+        b2=sidefft[i][1]
+        b3=b1*b1+b2*b2
+        c=(resultfftsq[0]/a3)*max(data[1].max(),data[1].min(),key=abs)
+        d=(resultfftsq[1]/b3)*max(data[1].max(),data[1].min(),key=abs)
+        ir[i]=[c,d]
     print("done with ir synthesis")
     return ir
 
@@ -88,11 +96,11 @@ def msconvolve(noise_data,ir):
 
 
 red=wav.read("noise RED.wav")
-print("red : "+str(len(red[1]))+" samples.")
+print("red : "+str(red[1]))
 brown=wav.read("noise BROWN.wav")
-print("brown : "+str(len(brown[1]))+" samples.")
+print("brown : "+str(brown[1]))
 white=wav.read("noise WHITE.wav")
-print("white : "+str(white[1])+" samples.")
+print("white : "+str(white[1]))
 redir=msconvolve(deconvolve(red,split_fft(reference)))
 brownir=msconvolve(deconvolve(brown,split_fft(reference)))
 whiteir=msconvolve(deconvovle(white,split_fft(reference)))
