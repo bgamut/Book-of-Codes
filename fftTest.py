@@ -95,16 +95,22 @@ def msconvolve(noise_data,ir):
     return result
 
 
+
+
+reference_fft=np.zeros(shape=(256,2))
+reference_fft=split_fft(reference)
 red=wav.read("noise RED.wav")
 print("red : "+str(red[1]))
+print(str(split_fft(reference)))
+redir=np.zeros(shape=(256,2))
+redir=np.deconvolve(red,reference_fft)
+redir=msconvolve(red,redir)
+wav.write("redir.wav",44100,redir)
+'''
 brown=wav.read("noise BROWN.wav")
 print("brown : "+str(brown[1]))
 white=wav.read("noise WHITE.wav")
 print("white : "+str(white[1]))
-redir=msconvolve(deconvolve(red,split_fft(reference)))
-brownir=msconvolve(deconvolve(brown,split_fft(reference)))
-whiteir=msconvolve(deconvovle(white,split_fft(reference)))
-
-wav.write("redir.wav",44100,redir)
 wav.write("brownir.wav",44100,brownir)
 wav.write("whiteir.wav",44100,whiteir)
+'''
