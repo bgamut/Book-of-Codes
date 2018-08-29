@@ -1,3 +1,4 @@
+"""
 from tweepy import OAuthHandler
 import tweepy
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -19,3 +20,44 @@ for i in range(len(query)):
     positive+=sid.polarity_scores(a.encode('ascii','ignore'))['pos']
 print (positive)
 print (negative)
+"""
+from twython import Twython
+twitter=Twython(twitterkey,twittersecret,twittertoken,twittertokensecret)
+client_args={
+    'headers':{
+        'q':'nasa'
+    }
+}
+a=twitter.search(q='trap music',count=100,lang='en')
+with open('searchdata.json','w') as f:
+    f.write(json.dumps(a))
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+sid=SentimentIntensityAnalyzer()
+compound=0.0
+positive=0.0
+negative=0.0
+list=[]
+for i in range(len(a['statuses'])):
+    """
+    print('url: '+str(a['statuses'][i]['user']['url']))
+    print('')
+    print(a['statuses'][i]['text'])
+    print('')
+    print('retweet: '+str(a['statuses'][i]['retweet_count']))
+    print('')
+    print('favorited: '+str(a['statuses'][i]['favorite_count']))
+    print('freinds: '+str(a['statuses'][i]['user']['friends_count']))
+    print('hometown: '+str(a['statuses'][i]['user']['location']))
+    print('geo enabled: '+str(a['statuses'][i]['user']['geo_enabled']))
+    print('time zone: '+str(a['statuses'][i]['user']['time_zone']))
+    print('description: '+str(a['statuses'][i]['user']['description']))
+    print('screen_name: '+str(a['statuses'][i]['user']['screen_name']))
+    """
+    list.append(a['statuses'][i]['text'])
+    compound+=sid.polarity_scores(a['statuses'][i]['text'])['compound']
+    positive+=sid.polarity_scores(a['statuses'][i]['text'])['pos']
+
+print(list)
+print('')
+print ("positive: "+str(positive))
