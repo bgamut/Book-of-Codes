@@ -21,6 +21,30 @@ for i in range(len(query)):
 print (positive)
 print (negative)
 """
+import os
+import json
+def relativepath(filename, subdirectory=''):
+    dirname=os.getcwd()
+    if subdirectory is not '':
+        dirname=os.path.join(dirname,subdirectory)
+    filepath = os.path.join(dirname, filename)
+    #print(filepath)
+    return filepath
+def jd(filename):
+    filepath = relativepath(filename, 'json')
+    #print(filepath)
+    with open(filepath) as f:
+        data = json.load(f)
+    f.close()
+    return data
+f=jd('localInfo.json')
+
+youtubetokenresponse=f['youtubetokenresponse']
+bearertoken=f['bearertoken']
+twitterkey=f['twitterconsumerkey']
+twittersecret=f['twitterconsumersecret']
+twittertoken=f['twitteraccesstoken']
+twittertokensecret=f['twitteraccesstokensecret']
 from twython import Twython
 twitter=Twython(twitterkey,twittersecret,twittertoken,twittertokensecret)
 client_args={
