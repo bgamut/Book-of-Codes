@@ -14,15 +14,15 @@
 import argparse
 import sys
 import dropbox
-import sentiment as s
+from sentiment import *
 
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError
 
 # Access token
-TOKEN =s.jd('localInfo.json')['dropboxaccesstoken']
+TOKEN =jd('localInfo.json')['dropboxaccesstoken']
 
-LOCALFILE = s.relativepath(sys.argv[1])
+LOCALFILE = relativepath(sys.argv[1])
 # must create /autobackup directory in dropbox before.
 BACKUPPATH = '/autobackup/'+sys.argv[1]# Keep the forward slash before destination filename
 
