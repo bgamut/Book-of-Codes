@@ -2,11 +2,12 @@ from ebaysdk.finding import Connection as finding
 import sentiment as s
 import math
 keyword='supreme'
-searchNumber=1000
+searchNumber=10
 entriesPerPage=25
 totalPageNumber=math.ceil(searchNumber/entriesPerPage)
 api=finding(appid =s.jd('localInfo.json')['ebayappid'], config_file=None)
 price=0
+dictionary={}
 for i in range(totalPageNumber):
     api.execute('findItemsAdvanced', {
         'keywords': keyword,
@@ -23,14 +24,16 @@ for i in range(totalPageNumber):
         })
 
     dict=api.response_dict()
-    categories=[]
+    
     
     for j in range(entriesPerPage):
-        if str(dict.searchResult.item[j].primaryCategory.categoryName) not in categories:
-            categories.append(str(dict.searchResult.item[j].primaryCategory.categoryName))
+        category=str(dict.searchResult.item[j].primaryCategory.categoryName)
+        if category not in dictionary:
+            dictionary[category]=[]
         print(dict.searchResult.item[j])
-        price += float(dict.searchResult.item[j].sellingStatus.currentPrice.value)
-        print(" ")
+        dictionary[category].append(float(dict.searchResult.item[j].sellingStatus.currentPrice.value))
+        #print(" ")
+
 #responsedataobject is not subscriptable 
 """
     for j in range(entriesPerPage):
@@ -38,5 +41,11 @@ for i in range(totalPageNumber):
             categories.append(dict['searchResult']['item'][i]['categoryName'])
         price += dict['searchResult']['item'][j]['currentPrice']['value']
 """
+for key in dictionary:
+    average_price=0
+    for i in range(len(dictionary[key])):
+        average_price+=dictionary[key][i]
+    dictionary[key]=average_price
     
+print(dictionary)
 
