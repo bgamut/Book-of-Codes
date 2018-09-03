@@ -9,7 +9,8 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait as wait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-def function():
+from selenium.webdriver.chrome.options import Options
+def getToken():
     baseurl = "https://accounts.google.com/o/oauth2/v2/auth?"
     googlefilename='client_secret.json'
     google=jd(googlefilename)
@@ -53,11 +54,25 @@ def function():
         pass
     newurl=response.geturl()
     from selenium import webdriver
+    """
+    chrome_options=Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.binary_location="C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+    
     pathtocdriver = "C:\SDKs\seleniumdriver\chromedriver.exe"
-    driver=webdriver.Chrome(pathtocdriver)
+    driver=webdriver.Chrome(executable_path=pathtocdriver, chrome_options=chrome_options)
+    """
+    pathtocdriver = "C:\SDKs\seleniumdriver\chromedriver.exe"
+    driver=webdriver.Chrome(executable_path=pathtocdriver)
+    """
+    phandomdriver="C:\SDKs\seleniumdriver\phantomjs.exe"
+    driver=webdriver.PhantomJS(phandomdriver)
+    """
     driver.get(url)
     googleid=jd('localInfo.json')['gmailid']
     googlepw=jd('localInfo.json')['gmailpassword']
+    googlename=jd('localInfo.json')['gmailname']
+    websitetitle=jd('localInfo.json')['websitetitle']
     oldtitle=driver.title
     newtitle=driver.title
     logged_in=False
@@ -66,7 +81,7 @@ def function():
     while (True):
         newtitle = driver.title
         try:
-            profile=driver.find_element_by_xpath("//*[contains(text(), 'Bernard Ahn')]")
+            profile=driver.find_element_by_xpath("//*[contains(text(),"+ googlename+")]")
             profile.click()
             time.sleep(5)
         except:
@@ -96,10 +111,14 @@ def function():
         if(newtitle is not oldtitle):
             logged_in=True
         """
-        if(driver.title=='squwbs'):
-            print (parse_qs(driver.current_url))
-            driver.quit()
+        if(driver.title==websitetitle):
+            #print(driver.current_url)
+            #print (parse_qs(driver.current_url))
+            for keys in parse_qs(driver.current_url):
+                print(parse_qs(driver.current_url)[keys][0])
+                return (parse_qs(driver.current_url)[keys][0])
+                driver.quit()
             #wait(driver, 15).until_not(EC.title_is(title))
 
 if __name__ == "__main__":
-    function()
+    getToken()
