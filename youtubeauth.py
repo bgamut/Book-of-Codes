@@ -10,19 +10,33 @@ from selenium.webdriver.support.ui import WebDriverWait as wait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-def getToken():
+def getToken(local=True):
     baseurl = "https://accounts.google.com/o/oauth2/v2/auth?"
-    googlefilename='client_secret.json'
-    google=jd(googlefilename)
+    
+    
     #yql_query = "select wind from weather.forecast where woeid=2460286"
     #put the 'q' on top for regex reasons
-    headers={
-        'scope' : 'https://www.googleapis.com/auth/youtube.readonly',
-        'redirect_uri' : google['web']['redirect_uris'][0],
-        'include_granted_scopes':'true',
-        'response_type' : 'token',
-        'client_id':google['web']['client_id']
-    }
+
+    if (local==True):
+        googlelocalfilename="local_google.json"
+        googlelocal=jd(googlelocalfilename)
+        headers={
+            'scope' : 'https://www.googleapis.com/auth/youtube.readonly',
+            'redirect_uri' : googlelocal['installed']['redirect_uris'][0],
+            'include_granted_scopes':'true',
+            'response_type' : 'code',
+            'client_id':googlelocal['installed']['client_id']
+        }
+    else:
+        googlewebfilename='client_secret.json'
+        googleweb=jd(googlewebfilename)
+        headers={
+            'scope' : 'https://www.googleapis.com/auth/youtube.readonly',
+            'redirect_uri' : googleweb['web']['redirect_uris'][0],
+            'include_granted_scopes':'true',
+            'response_type' : 'token',
+            'client_id':googleweb['web']['client_id']
+        }
     """
     token=jd('localInfo.json')['bearertoken']
     headers={
@@ -111,14 +125,23 @@ def getToken():
         if(newtitle is not oldtitle):
             logged_in=True
         """
-        if(driver.title==websitetitle):
-            #print(driver.current_url)
-            #print (parse_qs(driver.current_url))
+        if(local==True):
             for keys in parse_qs(driver.current_url):
-                print(parse_qs(driver.current_url)[keys][0])
-                return (parse_qs(driver.current_url)[keys][0])
+                print(parse_qs(driver.current_url)['approvalCode'][0])
+                return(parse_qs(driver.current_url)['approvalCode'][0])
                 driver.quit()
-            #wait(driver, 15).until_not(EC.title_is(title))
+                
+        else:
+            if(driver.title==websitetitle):
+                #print(driver.current_url)
+                #print (parse_qs(driver.current_url))
+
+                for keys in parse_qs(driver.current_url):
+                    
+                    print(parse_qs(driver.current_url)[keys][0])
+                    return (parse_qs(driver.current_url)[keys][0])
+                    driver.quit()
+                #wait(driver, 15).until_not(EC.title_is(title))
 
 if __name__ == "__main__":
-    getToken()
+    getToken(sys.argv)
