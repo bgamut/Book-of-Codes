@@ -110,7 +110,7 @@ def ebay(keyword):
     index=1
     newExample=[]
     for key in dictionary:
-        print("#"+str(index)+" Category : "+key+" / AVERAGE PRICE : "+dictionary[key]+" USD / EXAMPLE : "+examples[key]+" / EXAMPLE URL : "+urls[key])
+        print("#"+str(index)+" Category : "+key+" / AVERAGE PRICE : "+str(dictionary[key])+" USD / EXAMPLE : "+examples[key]+" / EXAMPLE URL : "+urls[key])
         newExample.append(examples[key])
         index+=1
     #print(new_dictionary)
