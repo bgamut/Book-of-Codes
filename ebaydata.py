@@ -48,6 +48,7 @@ def ebay(keyword):
     dictionary={}
     examples={}
     urls={}
+    flux={}
     for i in range(totalPageNumber):
         api.execute('findItemsAdvanced', {
             'keywords': keyword,
@@ -98,6 +99,7 @@ def ebay(keyword):
         for i in range(len(dictionary[key])):
             average_price+=dictionary[key][i]/len(dictionary[key])
         dictionary[key]=math.floor(average_price)
+        flux[key]=dictionary[key]
     dictionary=sortDict(dictionary)
     #print(dictionary)
     #new_dictionary={}
@@ -110,7 +112,7 @@ def ebay(keyword):
     index=1
     newExample=[]
     for key in dictionary:
-        print("#"+str(index)+" Category : "+key+" / AVERAGE PRICE : "+str(dictionary[key])+" USD / EXAMPLE : "+examples[key]+" / EXAMPLE URL : "+urls[key])
+        print("#"+str(index)+" Category : "+key+" / AVERAGE PRICE : "+dictionary[key]+" USD / volume: "+flux[key]+" EXAMPLE : "+examples[key]+" / EXAMPLE URL : "+urls[key])
         newExample.append(examples[key])
         index+=1
     #print(new_dictionary)
