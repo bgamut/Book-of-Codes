@@ -48,7 +48,9 @@ def ebay(keyword):
     dictionary={}
     examples={}
     urls={}
+    shipping={}
     flux={}
+    volatility={}
     for i in range(totalPageNumber):
         api.execute('findItemsAdvanced', {
             'keywords': keyword,
@@ -74,11 +76,14 @@ def ebay(keyword):
                 category=str(dict.searchResult.item[j].primaryCategory.categoryId+" - "+dict.searchResult.item[j].primaryCategory.categoryName)
                 if category not in dictionary:
                     dictionary[category]=[]
+                    shipping[category]=[]
                     examples[category]=dict.searchResult.item[j].title
                     urls[category]=dict.searchResult.item[j].viewItemURL
                 #print(dict.searchResult.item[j])
                 try:
                     dictionary[category].append(float(dict.searchResult.item[j].sellingStatus.currentPrice.value))
+                    if (dict.searchResult.item[j].shippingInfo.shippingServiceCost.value=='USD'):
+                        shipping[category].append(float(dict.searchResult.item[j].shippingInfo.shippingServiceCost.value))
                     #dictionary[category].append(dict.searchResult.item[j].sellingStatus.currentPrice.value+" USD")
                 
                 except:
@@ -94,24 +99,41 @@ def ebay(keyword):
                 categories.append(dict['searchResult']['item'][i]['categoryName'])
             price += dict['searchResult']['item'][j]['currentPrice']['value']
     """
+    for key in shipping:
+        average_shipping=0
+        for i in range(len(shipping[key])):
+            average_price+=shipping[key][i]/len(shipping[key])
+        shipping[key]=math.floor(average_shipping)
+    
     for key in dictionary:
         average_price=0
         flux[key]=len(dictionary[key])
         for i in range(len(dictionary[key])):
             average_price+=dictionary[key][i]/len(dictionary[key])
         dictionary[key]=math.floor(average_price)
+        volatility[key]=flux[key]*(dictionary[key]-shipping[key])
     dictionary=sortDict(dictionary)
+    volatility=sortDict(volatility)
     #print(dictionary)
     #new_dictionary={}
+    """
     index=0
     for key in dictionary.copy():
         if index>9:
             dictionary.pop(key)
         index+=1
+    """
+    index=0
+    for key in volatility.copy():
+        if index>9:
+            volatility.pop(key)
+        index+=1
     #print(dictionary)
     index=1
     newExample=[]
-    for key in dictionary:
+    
+    #for key in dictionary:
+    for key in volatility:
         print("#"+str(index))
         print("  Category : "+key)
         print("  AVERAGE PRICE : "+str(dictionary[key])+" USD")

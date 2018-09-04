@@ -4,7 +4,7 @@ from apiclient.discovery import build
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
 from sentiment import *
-
+from pprint import pprint
 
 # Set DEVELOPER_KEY to the API key value from the APIs & auth > Registered apps
 # tab of
@@ -30,7 +30,7 @@ def youtube_search(options):
   videos = []
   channels = []
   playlists = []
-
+  pprint(search_response['items'][0])
   # Add each result to the appropriate list, and then display the lists of
   # matching videos, channels, and playlists.
   for search_result in search_response.get("items", []):
@@ -43,11 +43,11 @@ def youtube_search(options):
     elif search_result["id"]["kind"] == "youtube#playlist":
       playlists.append("%s (%s)" % (search_result["snippet"]["title"],
                                     search_result["id"]["playlistId"]))
-
+"""
   print ("Videos:\n", "\n".join(videos), "\n")
   print ("Channels:\n", "\n".join(channels), "\n")
   print ("Playlists:\n", "\n".join(playlists), "\n")
-
+"""
 
 if __name__ == "__main__":
   argparser.add_argument("--q", help="Search term", default="Google")
