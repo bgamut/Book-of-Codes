@@ -47,6 +47,7 @@ def ebay(keyword):
     api=finding(appid =jd('localInfo.json')['ebayappid'], config_file=None)
     dictionary={}
     examples={}
+    urls={}
     for i in range(totalPageNumber):
         api.execute('findItemsAdvanced', {
             'keywords': keyword,
@@ -73,6 +74,7 @@ def ebay(keyword):
                 if category not in dictionary:
                     dictionary[category]=[]
                     examples[category]=dict.searchResult.item[j].title
+                    urls[category]=dict.searchResult.item[j].viewItemURL
                 #print(dict.searchResult.item[j])
                 try:
                     dictionary[category].append(float(dict.searchResult.item[j].sellingStatus.currentPrice.value))
@@ -108,7 +110,7 @@ def ebay(keyword):
     index=1
     newExample=[]
     for key in dictionary:
-        print("#"+str(index)+" Category : "+key+" / AVERAGE PRICE : "+dictionary[key]+" USD => "+examples[key])
+        print("#"+str(index)+" Category : "+key+" / AVERAGE PRICE : "+dictionary[key]+" USD / EXAMPLE : "+examples[key]+" / EXAMPLE URL : "+urls[key])
         newExample.append(examples[key])
         index+=1
     #print(new_dictionary)
