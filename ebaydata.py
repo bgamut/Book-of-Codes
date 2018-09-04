@@ -96,10 +96,10 @@ def ebay(keyword):
     """
     for key in dictionary:
         average_price=0
+        flux[key]=len(dictionary[key])
         for i in range(len(dictionary[key])):
             average_price+=dictionary[key][i]/len(dictionary[key])
         dictionary[key]=math.floor(average_price)
-        flux[key]=dictionary[key]
     dictionary=sortDict(dictionary)
     #print(dictionary)
     #new_dictionary={}
@@ -112,7 +112,12 @@ def ebay(keyword):
     index=1
     newExample=[]
     for key in dictionary:
-        print("#"+str(index)+" Category : "+key+" / AVERAGE PRICE : "+dictionary[key]+" USD / volume: "+flux[key]+" EXAMPLE : "+examples[key]+" / EXAMPLE URL : "+urls[key])
+        print("#"+str(index))
+        print("  Category : "+key)
+        print("  AVERAGE PRICE : "+str(dictionary[key])+" USD")
+        print("  volume: "+str(flux[key]))
+        print("  EXAMPLE Title: "+examples[key])
+        print("  EXAMPLE URL : "+urls[key])
         newExample.append(examples[key])
         index+=1
     #print(new_dictionary)
