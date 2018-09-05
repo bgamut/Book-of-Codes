@@ -3,6 +3,7 @@ from sentiment import *
 import math
 import sys
 from pprint import pprint
+import numpy as np
 # gets a response
 """         
 {'itemId': '263788452134', 
@@ -51,6 +52,7 @@ def ebay(keyword):
     shipping={}
     flux={}
     volatility={}
+    maxprices={}
     for i in range(totalPageNumber):
         api.execute('findItemsAdvanced', {
             'keywords': keyword,
@@ -77,11 +79,13 @@ def ebay(keyword):
                 if category not in dictionary:
                     dictionary[category]=[]
                     shipping[category]=[]
-                    examples[category]=dict.searchResult.item[j].title
-                    urls[category]=dict.searchResult.item[j].viewItemURL
+                    examples[category]=[]
+                    urls[category]=[]
                 #print(dict.searchResult.item[j])
                 try:
                     dictionary[category].append(float(dict.searchResult.item[j].sellingStatus.currentPrice.value))
+                    examples[category].append(dict.searchResult.item[j].title)
+                    urls[category].append(dict.searchResult.item[j].viewItemURL)
                     if (dict.searchResult.item[j].shippingInfo.shippingServiceCost.value=='USD'):
                         shipping[category].append(float(dict.searchResult.item[j].shippingInfo.shippingServiceCost.value))
                     #dictionary[category].append(dict.searchResult.item[j].sellingStatus.currentPrice.value+" USD")
@@ -99,6 +103,7 @@ def ebay(keyword):
                 categories.append(dict['searchResult']['item'][i]['categoryName'])
             price += dict['searchResult']['item'][j]['currentPrice']['value']
     """
+    
     for key in shipping:
         average_shipping=0
         for i in range(len(shipping[key])):
@@ -106,6 +111,11 @@ def ebay(keyword):
         shipping[key]=math.floor(average_shipping)
     
     for key in dictionary:
+        maxindex = np.argmax(dictionary[key])
+        examples[key]=examples[key][maxindex]
+        urls[key]=urls[key][maxindex]
+        maxprice=math.floor(dictionary[key][maxindex])
+        maxprices[key]=maxprice
         average_price=0
         flux[key]=len(dictionary[key])
         for i in range(len(dictionary[key])):
@@ -136,6 +146,7 @@ def ebay(keyword):
     for key in volatility:
         print("#"+str(index))
         print("  Category : "+key)
+        print("  MAXIMUM PRICE : "+str(maxprices[key])+" USD")
         print("  AVERAGE PRICE : "+str(dictionary[key])+" USD")
         print("  volume: "+str(flux[key]))
         print("  EXAMPLE Title: "+examples[key])
