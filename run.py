@@ -347,10 +347,10 @@ def notify_me(message):
     client.send(Message(text=message), thread_id=client.uid, thread_type=ThreadType.USER)
 
 def tweet(message):
-    twit = twitter.Api(consumer_key="eOtFpo5JPUFFQZeVYxWciRj2Z",
-                        consumer_secret="j7UDLedjqr5KRj9hrKHAe0vIKj82Gr3mWTFeprP583BmdBgsIt",
-                        access_token_key="992221193225715712-npdxx2zwaJDeW6TVEa4v1OsqjTkl4Cr",
-                        access_token_secret="f7sXT8Bn4SpErdO9eBGg3nSZvjRF6SSAGOnOPuCJtbw0d", input_encoding="utf-8")
+    twit = twitter.Api(consumer_key="",
+                        consumer_secret="",
+                        access_token_key="",
+                        access_token_secret="", input_encoding="utf-8")
     twit.PostUpdate(message)
 
 def email_me(message):
