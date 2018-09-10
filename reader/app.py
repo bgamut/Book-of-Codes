@@ -8,6 +8,21 @@ import sys
 import time
 import json
 import string
+import re
+import unicodedata
+
+def strip_accents(text):
+
+    try:
+        text = unicode(text, 'utf-8')
+    except NameError: # unicode is a default on python 3 
+        pass
+    text = unicodedata.normalize('NFD', text)
+    text = text.encode('ascii', 'ignore')
+    text = text.decode("utf-8")
+    return str(text)
+
+
 def read(file_name):
     newfile=relativepath(file_name)
     file = open(newfile,'rb')
@@ -76,8 +91,10 @@ def upload_file():
 def reader():
     text = read('temp')
     table=str.maketrans('','', string.punctuation)
-    stripped=[words.translate(table) for words in text ]
+    only_letters=[words.translate(table) for words in text ]
+    stripped=[strip_accents(words) for words in only_letters]
     lowered=[words.lower() for words in stripped]
+
     return render_template('reader.html', text=json.dumps(lowered))
 if __name__ == '__main__':
     app.run(debug=True)
