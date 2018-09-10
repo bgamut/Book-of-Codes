@@ -1,0 +1,61 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+<div id="box">
+    <p id="value_lable">
+    </p>
+</div>
+
+<style>
+    #value_lable {
+        display:table-cell;
+        font-family: 'Roboto';font-size: 50px;
+        text-align:center;
+        vertical-align: middle;
+    }
+    #box{
+        display: table;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        /*border: 2px dashed #f69c55;
+        */
+    }
+</style>
+<script type="text/javascript">
+    var text ={{ text|safe }}
+    example=["0","1","2"]
+    //console.log(text)
+    //console.log(text.length)
+
+    var i = 0
+    var pause = false
+    setInterval(function(){
+        if(i<text.length){
+            document.body.onkeydown=function(e){
+                if(e.keyCode ==32){
+                    if(pause==true){
+                        pause=false
+                    }
+                    else{
+                        pause=true
+                    }
+                }
+            }
+            var newText = text[i]
+            document.getElementById("value_lable").innerHTML = newText
+            if(pause==false){
+                i+=1
+            } 
+        }
+        else{
+            return
+        }
+    },150)
+
+
+</script>
+<!--
+    {% for t in text %}
+        {{ t }}<br>
+    {% endfor %}
+-->

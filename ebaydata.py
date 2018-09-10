@@ -60,14 +60,14 @@ def ebay(keyword):
                 {'name': 'Condition', 'value': 'Used'},
                 {'name': 'MinBids','value':'1'},
                 {'name': 'ListingType', 'value': 'Auction'},
-                {'name': 'MinPrice', 'value': '10', 'paramName': 'Currency', 'paramValue': 'USD'},
+                {'name': 'MinPrice', 'value': '1', 'paramName': 'Currency', 'paramValue': 'USD'},
                 {'name': 'MaxPrice', 'value': '1000000', 'paramName': 'Currency', 'paramValue': 'USD'}
             ],
             'paginationInput': {
                 'entriesPerPage': entriesPerPage,
                 'pageNumber': i+1
                 },
-            'sortOrder': 'CurrentPriceHighest'
+            'sortOrder': 'BidCountMost'
             })
 
         dict=api.response_dict()
@@ -148,6 +148,7 @@ def ebay(keyword):
         print("  Category : "+key)
         print("  MAXIMUM PRICE : "+str(maxprices[key])+" USD")
         print("  AVERAGE PRICE : "+str(dictionary[key])+" USD")
+        print("  AVERAGE PRICE-AVERAGE SHIPPING : "+str(dictionary[key]-shipping[key])+" USD")
         print("  volume: "+str(flux[key]))
         print("  EXAMPLE Title: "+examples[key])
         print("  EXAMPLE URL : "+urls[key])
@@ -166,4 +167,3 @@ if __name__ == "__main__":
         for i in range(len(sys.argv)-1):
             words.append(sys.argv[i+1])
             ebay(sys.argv)
-            
