@@ -10,6 +10,8 @@ import json
 import string
 import re
 import unicodedata
+#pymupdf is called fitz for some odd reason
+import fitz
 
 def strip_accents(text):
 
@@ -22,7 +24,7 @@ def strip_accents(text):
     text = text.decode("utf-8")
     return str(text)
 
-
+"""
 def read(file_name):
     newfile=relativepath(file_name)
     file = open(newfile,'rb')
@@ -34,10 +36,17 @@ def read(file_name):
         sometype=stringraw.split()
         for j in range(len(sometype)):
             words.append(sometype[j])
-            """
-            yield sometype[j]
-            time.sleep(0.125)
-            """
+    return words
+"""
+def read(file_name):
+    newfile=relativepath(file_name)
+    doc=fitz.open(newfile)
+    pages = len(doc)
+    words=[]
+    for page in doc:
+        text=page.getText()
+        for word in text.splitlines():
+            words.append(word)
     return words
 def relativepath(filename, subdirectory=''):
     dirname=os.getcwd()
@@ -100,9 +109,15 @@ def reader():
 @app.route('/scroller')
 def scroller():
     text = read('temp')
+    table=str.maketrans('','', string.punctuation)
+    only_letters=[words.translate(table) for words in text ]
+    new_text=' '.join(only_letters)
+    print(new_text)
+    """
     stripped=[strip_accents(words) for words in text]
     new_text=' '.join(stripped)
     return render_template('scroll.html', text=json.dumps(new_text, ensure_ascii=False))
-
+    """
+    return render_template('scroll.html', text=json.dumps(new_text, ensure_ascii=False))
 if __name__ == '__main__':
     app.run(debug=True)
