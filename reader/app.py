@@ -74,7 +74,7 @@ def upload_file():
             #filename = secure_filename(file.filename)
             filename="temp"
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('reader'))
+            return redirect(url_for('scroller'))
     return '''
     <!doctype html>
     <title>Upload new File</title>
@@ -96,5 +96,13 @@ def reader():
     lowered=[words.lower() for words in stripped]
 
     return render_template('reader.html', text=json.dumps(lowered))
+
+@app.route('/scroller')
+def scroller():
+    text = read('temp')
+    stripped=[strip_accents(words) for words in text]
+    new_text=' '.join(stripped)
+    return render_template('scroll.html', text=json.dumps(new_text, ensure_ascii=False))
+
 if __name__ == '__main__':
     app.run(debug=True)
