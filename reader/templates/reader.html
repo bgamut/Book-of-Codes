@@ -41,6 +41,14 @@
                     }
                 }
             }
+            document.body.onclick=function(){
+                if(pause==true){
+                        pause=false
+                    }
+                else{
+                        pause=true
+                    }
+            }
             var newText = text[i]
             document.getElementById("value_lable").innerHTML = newText
             if(pause==false){
