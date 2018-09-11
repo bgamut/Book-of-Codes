@@ -4,6 +4,7 @@ import time
 from sentiment import relativepath
 import os
 
+
 def read(file_name):
     newfile=relativepath(file_name)
     file = open(newfile,'rb')
