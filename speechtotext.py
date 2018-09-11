@@ -20,7 +20,7 @@ def callback(recognizer, audio):
         # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
         # instead of `r.recognize_google(audio)`
         #print("sphinx thinks you said " + recognizer.recognize_sphinx(audio))
-        print(recognizer.recognize_sphinx(audio))
+        #print(recognizer.recognize_sphinx(audio))
         print(recognizer.recognize_wit(audio,key=WIT_AI_KEY))
     except sr.UnknownValueError:
         #print("sphinx could not understand audio")
