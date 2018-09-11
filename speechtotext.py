@@ -10,6 +10,7 @@ import time
 import speech_recognition as sr
 from sentiment import *
 
+
 WIT_AI_KEY=jd('localInfo.json')['witclientaccesstoken']
 # this is called from the background thread
 def callback(recognizer, audio):
@@ -44,6 +45,7 @@ def transcribe(file):
     with sr.AudioFile(audio_file) as source:
         audio=r.record(source) 
     text=r.recognize_sphinx(audio)
+    print(text)
 listen_print()
 # start listening in the background (note that we don't have to do this inside a `with` statement)
 # stop_listening = r.listen_in_background(m, callback)
