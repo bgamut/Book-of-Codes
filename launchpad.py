@@ -49,7 +49,7 @@ def marquee(matrix):
     for i in range(i-7):
         #led_dim()
         led_on(copy)
-        #time.sleep(0.1)
+        time.sleep(0.1)
         led_off()
         for j in range(8):
             copy[j].pop(0)
@@ -378,13 +378,15 @@ def convert_string(some_string):
             vector.append(y)
         elif letter=='z':
             vector.append(z)
+        elif letter==' ':
+            vector.append([[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]])
     new_matrix=blank.copy()
     for i in range(len(vector)):
         new_matrix=append(new_matrix,vector[i])
         new_matrix=append(new_matrix,[[0],[0],[0],[0],[0],[0],[0],[0]])
     new_matrix=append(new_matrix,blank.copy())
     return new_matrix
-w="offer"
+w="houston we are a go for launch"
 
 newer_matrix=convert_string(w)
 marquee(newer_matrix)
