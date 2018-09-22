@@ -1,26 +1,13 @@
-#pip install python-rtmidi
-import rtmidi
-import time
-import multiprocessing
-import sys
-from rtmidi.midiutil import open_midioutput
+/*ran npm install --global --production windows-build-tools in cmd as an admin before 
+*/
+var midi = require('midi')
+var launchpadder = require('launchpadder')
+var launchpad = launchpadder.Launchpad
+var cmd = require('node-cmd')
+var output = new midi.output();
+var sleep = require('sleep').sleep
 
-midiout=rtmidi.MidiOut()
-for portnum in range(len(midiout.get_ports())):
-    if 'Launchpad Mini' in midiout.get_ports()[portnum]:
-        LPport=portnum
-midiout.open_port(LPport)
-note_on=[0x90,64,127]
-note_off=[0x90,64,0]
-transform=[[0,1,2,3,4,5,6,7],
-[16,17,18,19,20,21,22,23],
-[32,33,34,35,36,37,38,39],
-[48,49,50,51,52,53,54,55],
-[64,65,66,67,68,69,70,71],
-[80,81,82,83,84,85,86,87],
-[96,97,98,99,100,101,102,103],
-[112,113,114,115,116,117,118,119]]
-blank=[
+var blank=[
     [0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0],
@@ -30,46 +17,25 @@ blank=[
     [0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0]   
 ]
+var transform=[[0,1,2,3,4,5,6,7],
+[16,17,18,19,20,21,22,23],
+[32,33,34,35,36,37,38,39],
+[48,49,50,51,52,53,54,55],
+[64,65,66,67,68,69,70,71],
+[80,81,82,83,84,85,86,87],
+[96,97,98,99,100,101,102,103],
+[112,113,114,115,116,117,118,119]]
 
-def led_off():
-    for i in range(128):
-        midiout.send_message([0x90,i,0])
-
-def target_process(i,j,brightness):
-    num=transform[i][j]
-    midiout.send_message([0x90,num,brightness])
-
-def led_dim(window,num):
-    for i in range(8):
-        for j in range(8):
-            if(window[i][j]==1):    
-                target_process(i,j,num)
-
-
-def led_on(window):
-    for i in range(8):
-        for j in range(8):
-            if(window[i][j]==1):    
-                
-                target_process(i,j,127)
-                
-                """
-                p=multiprocessing.Process(target=target_process, args=(i,j))
-                p.start()
-                p.join()
-                """
-                
-
-        
-
-def append(lettera,letterb):
-    r=blank.copy()
-    for i in range(8):
-        r[i]=lettera[i]+letterb[i]
-    
+function append(lettera,letterb){
+    r=blank.slice(0,blank.length)
+    for (var i=0; i<8; i++){
+        r[i]=lettera[i].concat(letterb[i])
+    }
     return r
-def convert_string(some_string):
-    a=[
+}
+
+function convert_string(someString){
+    var a=[
     [0,0,0,1,1,0,0,0],
     [0,0,1,1,1,1,0,0],
     [0,1,1,1,1,1,1,0],
@@ -79,7 +45,7 @@ def convert_string(some_string):
     [1,1,1,0,0,1,1,1],
     [1,1,1,0,0,1,1,1]
     ]
-    b=[
+    var b=[
         [1,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,1,1],
@@ -89,7 +55,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,0]   
     ]
-    c=[
+    var c=[
         [0,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,1,1],
@@ -99,7 +65,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [0,1,1,1,1,1,1,0]   
     ]
-    d=[
+    var d=[
         [1,1,1,1,1,1,0,0],
         [1,1,1,1,1,1,1,0],
         [1,1,0,0,0,1,1,1],
@@ -109,7 +75,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,0,0]   
     ]
-    e=[
+    var e=[
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,0,0],
@@ -119,7 +85,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1]   
     ]
-    f=[
+    var f=[
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,0,0],
@@ -129,8 +95,7 @@ def convert_string(some_string):
         [1,1,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0]  
     ]
-
-    g=[
+    var g=[
         [0,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,1,1],
@@ -140,8 +105,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [0,1,1,1,1,1,1,0]   
     ]
-
-    h=[
+    var h=[
         [1,1,1,0,0,1,1,1],
         [1,1,1,0,0,1,1,1],
         [1,1,1,0,0,1,1,1],
@@ -151,7 +115,7 @@ def convert_string(some_string):
         [1,1,1,0,0,1,1,1],
         [1,1,1,0,0,1,1,1]
     ]
-    i=[
+    var i=[
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1],
         [0,0,0,1,1,0,0,0],
@@ -161,7 +125,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1]   
     ]
-    j=[
+    var j=[
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1],
         [0,0,0,1,1,0,0,0],
@@ -171,7 +135,7 @@ def convert_string(some_string):
         [1,1,1,1,1,0,0,0],
         [1,1,1,1,1,0,0,0]   
     ]
-    k=[
+    var k=[
         [1,1,1,0,0,1,1,1],
         [1,1,1,0,0,1,1,1],
         [1,1,1,0,1,1,1,0],
@@ -181,7 +145,7 @@ def convert_string(some_string):
         [1,1,1,0,0,1,1,1],
         [1,1,1,0,0,1,1,1]
     ]
-    l=[
+    var l=[
         [1,1,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0],    
         [1,1,0,0,0,0,0,0],
@@ -191,7 +155,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1]   
     ]
-    m=[
+    var m=[
         [1,1,0,0,0,0,1,1],
         [1,1,1,0,0,1,1,1],
         [1,1,1,1,1,1,1,1],
@@ -201,7 +165,7 @@ def convert_string(some_string):
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1]  
     ]
-    n=[
+    var n=[
         [1,1,0,0,0,0,1,1],
         [1,1,1,0,0,0,1,1],
         [1,1,1,1,0,0,1,1],
@@ -211,7 +175,7 @@ def convert_string(some_string):
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1]  
     ]
-    o=[
+    var o=[
         [0,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,1,1],
@@ -221,7 +185,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [0,1,1,1,1,1,1,0]   
     ]
-    p=[
+    var p=[
         [1,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,1,1],
@@ -231,7 +195,7 @@ def convert_string(some_string):
         [1,1,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0] 
     ]
-    q=[
+    var q=[
         [0,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,1,1],
@@ -241,7 +205,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [0,1,1,1,1,1,1,1]   
     ]
-    r=[
+    var r=[
         [1,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,1,1],
@@ -251,7 +215,7 @@ def convert_string(some_string):
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1] 
     ]
-    s=[
+    var s=[
         [0,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1],
         [1,1,0,0,0,0,0,0],
@@ -261,7 +225,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [0,1,1,1,1,1,1,0]   
     ]
-    t=[
+    var t=[
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1],
         [0,0,0,1,1,0,0,0],
@@ -271,7 +235,7 @@ def convert_string(some_string):
         [0,0,0,1,1,0,0,0],
         [0,0,0,1,1,0,0,0]   
     ]
-    u=[
+    var u=[
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1],
@@ -281,7 +245,7 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1],
         [0,1,1,1,1,1,1,0]   
     ]
-    v=[
+    var v=[
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1],
@@ -291,7 +255,7 @@ def convert_string(some_string):
         [0,0,1,1,1,1,0,0],
         [0,0,0,1,1,0,0,0]   
     ]
-    w=[
+    var w=[
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1],
         [1,1,0,0,0,0,1,1],
@@ -301,7 +265,7 @@ def convert_string(some_string):
         [1,1,1,0,0,1,1,1],
         [1,1,0,0,0,0,1,1]  
     ]
-    x=[
+    var x=[
         [1,1,0,0,0,0,1,1],
         [1,1,1,0,0,1,1,1],
         [0,1,1,1,1,1,1,0],
@@ -311,7 +275,7 @@ def convert_string(some_string):
         [1,1,1,0,0,1,1,1],
         [1,1,0,0,0,0,1,1]  
     ]
-    y=[
+    var y=[
         [1,1,0,0,0,0,1,1],
         [1,1,1,0,0,1,1,1],
         [0,1,1,1,1,1,1,0],
@@ -321,7 +285,7 @@ def convert_string(some_string):
         [0,0,0,1,1,0,0,0],
         [0,0,0,1,1,0,0,0]
     ]
-    z=[
+    var z=[
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1],
         [0,0,0,0,1,1,1,0],
@@ -332,70 +296,90 @@ def convert_string(some_string):
         [1,1,1,1,1,1,1,1]  
     ]
     vector=[]
-    for letter in list(some_string):
-        if letter=='a':
-            vector.append(a)
-        elif letter=='b':
-            vector.append(b)
-        elif letter=='c':
-            vector.append(c)
-        elif letter=='d':
-            vector.append(d)
-        elif letter=='e':
-            vector.append(e)
-        elif letter=='f':
-            vector.append(f)
-        elif letter=='g':
-            vector.append(g)
-        elif letter=='h':
-            vector.append(h)
-        elif letter=='i':
-            vector.append(i)
-        elif letter=='j':
-            vector.append(j)
-        elif letter=='k':
-            vector.append(k)
-        elif letter=='l':
-            vector.append(l)
-        elif letter=='m':
-            vector.append(m)
-        elif letter=='n':
-            vector.append(n)
-        elif letter=='o':
-            vector.append(o)
-        elif letter=='p':
-            vector.append(p)
-        elif letter=='q':
-            vector.append(q)
-        elif letter=='r':
-            vector.append(r)
-        elif letter=='s':
-            vector.append(s)
-        elif letter=='t':
-            vector.append(t)
-        elif letter=='u':
-            vector.append(u)
-        elif letter=='v':
-            vector.append(v)
-        elif letter=='w':
-            vector.append(w)
-        elif letter=='x':
-            vector.append(x)
-        elif letter=='y':
-            vector.append(y)
-        elif letter=='z':
-            vector.append(z)
-        elif letter==' ':
-            vector.append([[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]])
-    new_matrix=blank.copy()
-    for i in range(len(vector)):
+    for (var i =0; i<someString.length; i++){
+        if (someString[i]=='a'){
+            vector.push(a)}
+        else if (someString[i]=='b'){
+            vector.push(b)}
+        else if (someString[i]=='c'){
+            vector.push(c)}
+        else if (someString[i]=='d'){
+            vector.push(d)}
+        else if (someString[i]=='e'){
+            vector.push(e)}
+        else if (someString[i]=='f'){
+            vector.push(f)}
+        else if (someString[i]=='g'){
+            vector.push(g)}
+        else if (someString[i]=='h'){
+            vector.push(h)}
+        else if (someString[i]=='i'){
+            vector.push(i)}
+        else if (someString[i]=='j'){
+            vector.push(j)}
+        else if (someString[i]=='k'){
+            vector.push(k)}
+        else if (someString[i]=='l'){
+            vector.push(l)}
+        else if (someString[i]=='m'){
+            vector.push(m)}
+        else if (someString[i]=='n'){
+            vector.push(n)}
+        else if (someString[i]=='o'){
+            vector.push(o)}
+        else if (someString[i]=='p'){
+            vector.push(p)}
+        else if (someString[i]=='q'){
+            vector.push(q)}
+        else if (someString[i]=='r'){
+            vector.push(r)}
+        else if (someString[i]=='s'){
+            vector.push(s)}
+        else if (someString[i]=='t'){
+            vector.push(t)}
+        else if (someString[i]=='u'){
+            vector.push(u)}
+        else if (someString[i]=='v'){
+            vector.push(v)}
+        else if (someString[i]=='w'){
+            vector.push(w)}
+        else if (someString[i]=='x'){
+            vector.push(x)}
+        else if (someString[i]=='y'){
+            vector.push(y)}
+        else if (someString[i]=='z'){
+            vector.push(z)}
+        else if (someString[i]==' '){
+            vector.push([[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]])
+        }
+    }
+    new_matrix=blank.slice(0,blank.length)
+    for (var i = 0; i< vector.length;i++){
         new_matrix=append(new_matrix,vector[i])
-        #new_matrix=vector[i].copy()
         new_matrix=append(new_matrix,[[0],[0],[0],[0],[0],[0],[0],[0]])
-    new_matrix=append(new_matrix,blank.copy())
+    }
+    new_matrix=append(new_matrix,blank.slice(0,blank.length))
     return new_matrix
-
-def added_window(window,pastwindow):
+}
+function target_process(i,j,brightness){
+    num=transform[i][j]
+    output.sendMessage([144,num,brightness])
+}
+function led_out(window,num){
+    for (var i=0; i<8; i++){
+        for (var j=0; j<8; j++){
+            if(window[i][j]==1){ 
+                target_process(i,j,num)
+            }
+        }
+    }
+}
+function led_off(){
+    for (var i; i<128; i++){
+        output.sendMessage([144,i,0])
+    }
+}
+function added_window(window,pastwindow){
     added=[
     [],
     [],
@@ -406,21 +390,30 @@ def added_window(window,pastwindow):
     [],
     []   
 ]
-    for i in range(8):
-        for j in range(8):
-            if (window[i][j]==0):
-                if(pastwindow[i][j]==1):
-                    added[i].append(1)
-                elif(pastwindow[i][j]==0):
-                    added[i].append(0)
-            elif (window[i][j]==1):
-                if(pastwindow[i][j]==1):
-                    added[i].append(1)
-                elif(pastwindow[i][j]==0):
-                    added[i].append(1)
-    return added
 
-def difference_window(window,pastwindow):
+    for (var i=0; i<8; i++){
+        for (var j=0; j<8; j++){
+            if (window[i][j]==0){
+                if(pastwindow[i][j]==1){
+                    added[i].push(1)
+                }
+                else if(pastwindow[i][j]==0){
+                    added[i].push(0)
+                }
+            }
+            else if (window[i][j]==1){
+                if(pastwindow[i][j]==1){
+                    added[i].push(1)
+                }
+                else if(pastwindow[i][j]==0){
+                    added[i].push(1)
+                }
+            }
+        }
+    }
+    return added
+}
+function difference_window(window,pastwindow){
     must_erase=[
     [],
     [],
@@ -431,46 +424,66 @@ def difference_window(window,pastwindow):
     [],
     []   
 ]
-    for i in range(8):
-        for j in range(8):
-            if (window[i][j]==0):
-                if(pastwindow[i][j]==1):
-                    must_erase[i].append(1)
-                elif(pastwindow[i][j]==0):
-                    must_erase[i].append(0)
-            elif (window[i][j]==1):
-                if(pastwindow[i][j]==1):
-                    must_erase[i].append(0)
-                elif(pastwindow[i][j]==0):
-                    must_erase[i].append(0)
+    for (var i=0; i<8; i++){
+        for (var j=0; j<8; j++){
+            if (window[i][j]==0){
+                if(pastwindow[i][j]==1){
+                    must_erase[i].push(1)
+                }
+                else if(pastwindow[i][j]==0){
+                    must_erase[i].push(0)
+                }
+            }
+            else if (window[i][j]==1){
+                if(pastwindow[i][j]==1){
+                    must_erase[i].push(0)
+                }
+                else if(pastwindow[i][j]==0){
+                    must_erase[i].push(0)
+                }
+            }
+        }
+    }
     return must_erase
+}
+    
 
-
-def marquee(word):
-    matrix=convert_string(word)
-    window=blank.copy()
-    for i in range(8):
-        window[i]=matrix[i][0:8]
-    i=len(matrix[0])
-    past_window=window.copy()
-    for i in range(i-7):
-        #led_dim(past_window,127)
-        led_dim(added_window(window,past_window),127)
-        #led_dim(difference_window(window,past_window),127)
-        led_off()
+function findLaunchpadPort () {
+    
+    for (var i = 0; i < output.getPortCount(); i++) {
         
-
-        past_window=window.copy()
-        for j in range(8):
+        try{
+            console.log(output.getPortName(i).match('Launchpad Mini')[0]=='Launchpad Mini')
+            if (output.getPortName(i).match('Launchpad Mini')[0]=='Launchpad Mini'){
+                return i
+            }
+        }
+        catch(e){
+            console.log('not it')
+        }
+  }
+}
+var portnum=findLaunchpadPort();
+console.log(portnum);
+output.openPort(portnum);
+function marquee(word){
+    matrix=convert_string(word)
+    window=blank.slice(0,blank.length)
+    for (var i=0; i<8; i++){
+        window[i]=matrix[i].slice(0,8)
+    }
+    
+    past_window=window.slice(0,window.length)
+    for (var i=0; i<matrix[0].length-7; i++){
+        led_off()
+        led_out(added_window(window,past_window),127)
+        
+        led_out(difference_window(window,past_window),0)
+        past_window=window.slice(0,window.length)
+        for (var j =0; j<8; j++){
             window[j].pop(0)
-            window[j].append(matrix[j][i+7])
-
-
-if __name__ == "__main__":
-    if len(sys.argv)<2:
-        raise SyntaxError("Please Provide a Keyword as an argument")
-    else:
-        words=""
-        for i in range(len(sys.argv)-1):
-            print(sys.argv[i+1])
-        marquee(str(sys.argv[1]))
+            window[j].push(matrix[j][i+7])
+        }
+    }
+}
+marquee('biz marquee')
