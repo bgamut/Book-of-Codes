@@ -1,11 +1,9 @@
 /*ran npm install --global --production windows-build-tools in cmd as an admin before 
 */
+'use strict'
 var midi = require('midi')
-var launchpadder = require('launchpadder')
-var launchpad = launchpadder.Launchpad
-var cmd = require('node-cmd')
+var meow = require('meow')
 var output = new midi.output();
-var sleep = require('sleep').sleep
 
 var portnum
 var blank=[
@@ -28,7 +26,7 @@ var transform=[[0,1,2,3,4,5,6,7],
 [112,113,114,115,116,117,118,119]]
 
 function append(lettera,letterb){
-    r=blank.slice(0,blank.length)
+    var r=blank.slice(0,blank.length)
     for (var i=0; i<8; i++){
         r[i]=lettera[i].concat(letterb[i])
     }
@@ -36,6 +34,106 @@ function append(lettera,letterb){
 }
 
 function convert_string(someString){
+    var zero= [
+        [0, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 0]
+      ]
+    var one= [
+        [1, 1, 1, 0],
+        [0, 1, 1, 1],
+        [0, 1, 1, 1],
+        [0, 1, 1, 1],
+        [0, 1, 1, 1],
+        [0, 1, 1, 1],
+        [0, 1, 1, 1],
+        [0, 1, 1, 1]
+      ]
+    var two = [
+        [1, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1]
+      ]
+    var three= [
+        [1, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 1, 1, 1, 1, 0],
+        [0, 0, 0, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 0]
+      ]
+    var four= [
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1]
+      ]
+    var five= [
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 1, 1, 0],
+        [0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 0]
+      ]
+    var six= [
+        [0, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 0]
+      ]
+    var seven= [
+        [1, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1]
+      ]
+    var eight= [
+        [0, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 0]
+      ]
+    var nine= [
+        [0, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 0]
+      ]
     var a=[
     [0,0,0,1,1,0,0,0],
     [0,0,1,1,1,1,0,0],
@@ -298,7 +396,27 @@ function convert_string(someString){
     ]
     var vector=[]
     for (var i =0; i<someString.length; i++){
-        if (someString[i]=='a'){
+        if (someString[i]=='1'){
+            vector.push(one)}
+        else if (someString[i]=='2'){
+            vector.push(two)}
+        else if (someString[i]=='3'){
+            vector.push(three)}
+        else if (someString[i]=='4'){
+            vector.push(four)}
+        else if (someString[i]=='5'){
+            vector.push(five)}
+        else if (someString[i]=='6'){
+            vector.push(six)}
+        else if (someString[i]=='7'){
+            vector.push(seven)}
+        else if (someString[i]=='8'){
+            vector.push(eight)}
+        else if (someString[i]=='9'){
+            vector.push(nine)}
+        else if (someString[i]=='0'){
+            vector.push(zero)}
+        else if (someString[i]=='a'){
             vector.push(a)}
         else if (someString[i]=='b'){
             vector.push(b)}
@@ -355,9 +473,9 @@ function convert_string(someString){
         }
     }
     var new_matrix=blank.slice(0,blank.length)
-    for (var i = 0; i< vector.length;i++){
+    for (var i = 0; i< vector.length; i++){
         new_matrix=append(new_matrix,vector[i])
-        new_matrix=append(new_matrix,[[0],[0],[0],[0],[0],[0],[0],[0]])
+        new_matrix=append(new_matrix,[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]])
     }
     new_matrix=append(new_matrix,blank.slice(0,blank.length))
     return new_matrix
@@ -381,7 +499,7 @@ function led_off(){
     }
 }
 function added_window(window,pastwindow){
-    added=[
+    var added=[
     [],
     [],
     [],
@@ -415,7 +533,7 @@ function added_window(window,pastwindow){
     return added
 }
 function difference_window(window,pastwindow){
-    must_erase=[
+    var must_erase=[
     [],
     [],
     [],
@@ -452,17 +570,17 @@ function difference_window(window,pastwindow){
 function findLaunchpadPort () {
     
     for (var i = 0; i < output.getPortCount(); i++) {
-        console.log(output.getPortName(i))
+       
         try{
             
-            console.log(output.getPortName(i).match('Launchpad Mini')[0]=='Launchpad Mini')
+           
             if (output.getPortName(i).match('Launchpad Mini')[0]=='Launchpad Mini'){
                 portnum=i
                 output.openPort(i);
             }
         }
         catch(e){
-            console.log('not it')
+            console.log('port is being searched')
         }
   }
 }
@@ -481,16 +599,18 @@ function marquee(word){
             window[j]=window[j].slice(1)
         }
         led_out(added_window(window,past_window),127)
-        console.log(difference_window(window,past_window))
         led_out(difference_window(window,past_window),0)
-        
-        
-        
-        
     }
 }
 
 findLaunchpadPort();
-console.log(portnum);
-marquee('houston we are a go for the launch')
 
+
+var cli = meow('add argument to print something on the launchpad',{});
+var b0x0fStr1ngs = ''
+for (var i = 0; i< cli.input.length; i++){
+    b0x0fStr1ngs=b0x0fStr1ngs+(cli.input[i])+' '
+}
+marquee(b0x0fStr1ngs)
+
+module.exports = marquee

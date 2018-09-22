@@ -448,22 +448,19 @@ def difference_window(window,pastwindow):
 
 def marquee(word):
     matrix=convert_string(word)
-    window=blank.copy()
-    for i in range(8):
-        window[i]=matrix[i][0:8]
-    i=len(matrix[0])
-    past_window=window.copy()
-    for i in range(i-7):
+    for i in range(len(matrix[0])-8):
+        past_window=matrix.copy()
+        for j in range(8):
+            matrix[j].pop(0)
+            matrix[j].append(matrix[j][i+7])
         #led_dim(past_window,127)
-        led_dim(added_window(window,past_window),127)
-        #led_dim(difference_window(window,past_window),127)
-        led_off()
+        led_dim(added_window(matrix,past_window),127)
+        led_dim(difference_window(matrix,past_window),0)
+       
         
 
-        past_window=window.copy()
-        for j in range(8):
-            window[j].pop(0)
-            window[j].append(matrix[j][i+7])
+        
+        
 
 
 if __name__ == "__main__":
