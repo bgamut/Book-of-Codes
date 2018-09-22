@@ -7,6 +7,7 @@ var cmd = require('node-cmd')
 var output = new midi.output();
 var sleep = require('sleep').sleep
 
+var portnum
 var blank=[
     [0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0],
@@ -295,7 +296,7 @@ function convert_string(someString){
         [1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1]  
     ]
-    vector=[]
+    var vector=[]
     for (var i =0; i<someString.length; i++){
         if (someString[i]=='a'){
             vector.push(a)}
@@ -353,7 +354,7 @@ function convert_string(someString){
             vector.push([[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]])
         }
     }
-    new_matrix=blank.slice(0,blank.length)
+    var new_matrix=blank.slice(0,blank.length)
     for (var i = 0; i< vector.length;i++){
         new_matrix=append(new_matrix,vector[i])
         new_matrix=append(new_matrix,[[0],[0],[0],[0],[0],[0],[0],[0]])
@@ -362,7 +363,7 @@ function convert_string(someString){
     return new_matrix
 }
 function target_process(i,j,brightness){
-    num=transform[i][j]
+    var num=transform[i][j]
     output.sendMessage([144,num,brightness])
 }
 function led_out(window,num){
@@ -375,7 +376,7 @@ function led_out(window,num){
     }
 }
 function led_off(){
-    for (var i; i<128; i++){
+    for (var i=0; i<128; i++){
         output.sendMessage([144,i,0])
     }
 }
@@ -451,11 +452,13 @@ function difference_window(window,pastwindow){
 function findLaunchpadPort () {
     
     for (var i = 0; i < output.getPortCount(); i++) {
-        
+        console.log(output.getPortName(i))
         try{
+            
             console.log(output.getPortName(i).match('Launchpad Mini')[0]=='Launchpad Mini')
             if (output.getPortName(i).match('Launchpad Mini')[0]=='Launchpad Mini'){
-                return i
+                portnum=i
+                output.openPort(i);
             }
         }
         catch(e){
@@ -463,27 +466,31 @@ function findLaunchpadPort () {
         }
   }
 }
-var portnum=findLaunchpadPort();
-console.log(portnum);
-output.openPort(portnum);
+
 function marquee(word){
-    matrix=convert_string(word)
-    window=blank.slice(0,blank.length)
-    for (var i=0; i<8; i++){
-        window[i]=matrix[i].slice(0,8)
-    }
+    var window=[[],[],[],[],[],[],[],[]];
+    var past_window;
+    var matrix=convert_string(word)
+    window =matrix.slice(0,matrix.length)
     
-    past_window=window.slice(0,window.length)
+    
+    
     for (var i=0; i<matrix[0].length-7; i++){
-        led_off()
-        led_out(added_window(window,past_window),127)
-        
-        led_out(difference_window(window,past_window),0)
-        past_window=window.slice(0,window.length)
+        past_window=window.slice(0,matrix[0].length)
         for (var j =0; j<8; j++){
-            window[j].pop(0)
-            window[j].push(matrix[j][i+7])
+            window[j]=window[j].slice(1)
         }
+        led_out(added_window(window,past_window),127)
+        console.log(difference_window(window,past_window))
+        led_out(difference_window(window,past_window),0)
+        
+        
+        
+        
     }
 }
-marquee('biz marquee')
+
+findLaunchpadPort();
+console.log(portnum);
+marquee('houston we are a go for the launch')
+
