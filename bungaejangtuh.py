@@ -15,9 +15,10 @@ first_index=True
 
 
 headers={
-            'q' : someword,
-            'order':popular,
-            'page':1
+            'order':'popular',
+            'page':'1',
+            'q' : someword ,
+            
         }
 for key in headers:
     value=quote(headers[key])
@@ -72,7 +73,11 @@ while(newerurl==oldurl):
 
 driver.get(newurl)
 html=driver.page_source
-print(html)
+soup=BeautifulSoup(html, features='lxml')
+prices=soup.findAll('div',attrs={'class':'product-price'},text=True)
+for i in range(len(prices)):
+    prices[i]=prices[i].text.strip
+print(prices)
 #wait(driver, 15).until_not(EC.title_is(title))
 
 if __name__ == "__main__":
