@@ -598,8 +598,8 @@ function marquee(word){
         for (var j =0; j<8; j++){
             window[j]=window[j].slice(1)
         }
-        led_out(added_window(window,past_window),127)
-        led_out(difference_window(window,past_window),0)
+        led_out(added_window(window,past_window),120)
+        led_out(difference_window(window,past_window),4)
     }
 }
 
