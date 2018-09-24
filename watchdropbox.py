@@ -4,10 +4,11 @@ from watchdog.events import PatternMatchingEventHandler
 from subprocess import call
 from time import sleep
 from sentiment import relativepath
+from savetodropbox import absolutebackup
 import os
 
 class Watcher:
-    DIRECTORY_TO_WATCH="."
+    DIRECTORY_TO_WATCH=relativepath("")
 
     def __init__(self):
         self.observer = Observer()
@@ -45,9 +46,10 @@ class Handler(PatternMatchingEventHandler):
                 if(fpath[0]==directory[0]):
                     fpath.pop(0)
                     directory.pop(0)
-            path=str.join('\\',fpath)
-
-            call(['python','savetodropbox.py',path] , shell=True)
+            path=str.join('/',fpath)
+            #print(path)
+            #call(['python','savetodropbox.py',path] , shell=True)
+            absolutebackup(path)
 
             sleep(30)
         elif event.event_type == 'modified':
@@ -60,9 +62,10 @@ class Handler(PatternMatchingEventHandler):
                 if(fpath[0]==directory[0]):
                     fpath.pop(0)
                     directory.pop(0)
-            path=str.join('\\',fpath)
+            path=str.join('/',fpath)
             call(['python','savetodropbox.py',path] , shell=True)
-
+            #print(path)
+            absolutebackup(path)
             sleep(30)
 
 
