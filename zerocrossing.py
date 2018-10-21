@@ -36,19 +36,20 @@ for i in range (int(N/2)):
 
 plt.plot(xf,yf)
 plt.show()
-def mstosamplelength(ms,sr):
+def mstosamplelength(ms,sr=44100):
     return ms*sr/1000
 def attackArray(attackMS):
+    array=[0.0]
     attackLength=mstosamplelength(attackMS)
     for i in range(attackLength):
-        array.append(math.log(1+(i)/attackLength)/log(2))
+        array.append(math.log(1+(i)/attackLength)/math.log(2))
     return array
     
 def decayArray(decayMS):
     decayLength=mstosamplelength(decayMS)
     array=[1.0]
     for i in range(decayLength-2):
-        array.append(math.exp((-1*intervalNum)/(decayLength/10)))
+        array.append(math.exp((-1*i)/(decayLength/10)))
     array.append(0.0)
     return array
 def zero_crossing(buffer,samplerate):
