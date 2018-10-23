@@ -36,17 +36,85 @@ for i in range (int(N/2)):
 
 plt.plot(xf,yf)
 plt.show()
-def mstosamplelength(ms,sr=44100):
+def ms_to_samplelength(ms,sr=44100):
     return ms*sr/1000
-def attackArray(attackMS):
+
+def cubic_spline(x,y,ratio):
+    """
+      //x is an index array of length y
+      //y is the original array
+      // ratio is defined by newsamplerate/origsamperate
+    """
+    n=len(x)-1
+    h = []
+    l=[]
+    u=[]
+    z=[]
+    b=[]
+    c=[]
+    d=[]
+    al=[]
+    for i in range(n):
+        h.append(0)
+    newLength = len(y)*ratio
+    for i in range(n):
+        h[i]=x[i+1]-x[i]
+    for i in range(n-1):
+        al.append(0)
+    for i in range(n):
+        al[i+1]=3*((y[i+2]-y[i+1])/h[i+1] - (y[i+1]-y[i])/h[i])
+    al[0]=0
+    for i in range (n+1):
+        l.append(1)
+        u.append(0)
+        z.append(0)
+        b.append(0)
+        c.append(0)
+        d.append(0)
+
+    for i in range(n):
+        l[i] = 2*(x[i+1]-x[i-1]) - h[i-1]*u[i-1]
+        u[i] = h[i]/l[i]
+        z[i] = (al[i] - h[i-1]*z[i-1])/l[i]
+    i=n-1
+    while (i>=0):
+        c[i] = z[i] - u[i]*c[i+1]
+        b[i] = (y[i+1]-y[i])/h[i] - h[i]*(c[i+1] + 2*c[i])/3
+        d[i] = (c[i+1]-c[i])/(3*h[i])
+        i-=1
+      
+    result = [y, b, c, d]
+    xs = []
+    ys = []
+    for i in range(newLength):
+        xs.append(0)
+        ys.append(0)
+    coi=0
+    for i in range(newLength):
+        xs[i]=i/ratio
+        coi=math.floor(i/ratio)
+        ys[i]=result[0][coi]+result[1][coi]*(xs[i]-coi)+result[2][coi]*(xs[i]-coi)**2+result[3][coi]*(xs[i]-coi)**3
+    
+    return ys
+  
+def sr_converter(origArray,origSR,newSR):
+    ratio = newSR/origSR
+    origLength = len(origArray)
+    x = []
+    for i in range(origLength):
+        x.append(i)
+      
+    y = origArray
+    newArray = cubic_spline(x,y,ratio)
+    return newArray
+def attack_array(attackMS):
     array=[0.0]
     attackLength=mstosamplelength(attackMS)
     for i in range(attackLength):
         array.append(math.log(1+(i)/attackLength)/math.log(2))
     return array
-    
-def decayArray(decayMS):
-    decayLength=mstosamplelength(decayMS)
+def decay_array(decayMS):
+    decayLength=ms_to_samplelength(decayMS)
     array=[1.0]
     for i in range(decayLength-2):
         array.append(math.exp((-1*i)/(decayLength/10)))
