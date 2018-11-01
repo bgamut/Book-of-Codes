@@ -42,22 +42,29 @@ class MyForm(wx.Frame):
         self.mid_standard_deviations=[]
         self.side_averages=[]
         self.side_standard_deviations=[]
+        self.basepath=''
         for i in range(len(self.barkscale)+1):
-            self.averages.append(0)
-            self.standard_deviations.append(0)
+            self.mid_averages.append(0)
+            self.side_averages.append(0)
+            self.mid_standard_deviations.append(0)
+            self.side_standard_deviations.append(0)
         wx.Frame.__init__(self, None, wx.ID_ANY, "Mastering")
         panel = wx.Panel(self, wx.ID_ANY)
         self.currentDirectory= os.getcwd()
         openFileDlgBtnOne = wx.Button(panel, label = "OPEN Reference")
         openFileDlgBtnOne.Bind(wx.EVT_BUTTON,self.onOpenReference)
         openFileDlgBtnTwo = wx.Button(panel, label = "OPEN Original")
+        saveLocationBtn = wx.Button(panel, label='Choose Save Directory')
+        saveLocationBtn.Bind(wx.EVT_BUTTON,self.saveLocation)
         openFileDlgBtnTwo.Bind(wx.EVT_BUTTON,self.onOpenOriginal)
         runFileDlgBtn = wx.Button(panel, label = 'Run Mastering')
         runFileDlgBtn.Bind(wx.EVT_BUTTON,self.mastering)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(openFileDlgBtnOne, 0,wx.ALL|wx.CENTER,5)
         sizer.Add(openFileDlgBtnTwo, 0,wx.ALL|wx.CENTER,5)
+        sizer.Add(saveLocationBtn, 0, wx.ALL|wx.CENTER,5)
         sizer.Add(runFileDlgBtn, 0,wx.ALL|wx.CENTER,5)
+        
         panel.SetSizer(sizer)
     def analysebuffer(self,buffer,sr):
         def LP48(buffer,freq,sr):
@@ -199,7 +206,19 @@ class MyForm(wx.Frame):
                 temp+=(0)  
         return temp
 
-
+    def saveLocation(self, event):
+        dlg = wx.DirDialog(
+            self, "Choose the directory that the mastered files will be saved.",
+            style=wx.DD_DEFAULT_STYLE
+        )
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath()
+            print ("You chose the following path")
+            
+    
+            self.basePath=path
+            
+            print(self.basePath)
 
 
     def onOpenReference(self, event):
@@ -246,7 +265,7 @@ class MyForm(wx.Frame):
             for i in range(len(self.referencepath)):
                 print (self.referencepath[i])
 
-    def mastering(self):
+    def mastering(self,event):
         for file in self.referencepath:
             a=read(file)
             left = []
@@ -321,7 +340,9 @@ class MyForm(wx.Frame):
                 master[i][1]=(mid[i]-side[i])*np.iinfo('int16').max
             master = np.zeros((len(mid),2),'int16')
             #need to iterate through file names and foldername for the code below
-            write('master.wav',a[0],master)
+            filename=os.path.basename(file)
+            newfilename = os.path.join(self.basepath,+filename)
+            write(newfilename,a[0],master)
 
 
 if __name__ == "__main__":
