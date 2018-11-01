@@ -35,6 +35,7 @@ referencepath=[]
 barkscale = [0,51,127,200,270,370,440,530,640,770,950,1200,1550,19500]
 class MyForm(wx.Frame):
     def __init__(self):
+        
         self.barkscale = [51,127,200,270,370,440,530,640,770,950,1200,1550,19500]
         self.referencepath=[]
         self.originalpath=[]
@@ -43,6 +44,11 @@ class MyForm(wx.Frame):
         self.side_averages=[]
         self.side_standard_deviations=[]
         self.basepath=''
+        """
+        self.timer = wx.Timer(self, 1)
+        self.count = 0
+        self.gauge = wx.Gauge(panel, -1)
+        """
         for i in range(len(self.barkscale)+1):
             self.mid_averages.append(0)
             self.side_averages.append(0)
@@ -114,21 +120,42 @@ class MyForm(wx.Frame):
         obj=[]
         av=[]
         st=[]
+        print('analyzing')
         for i in range(len(self.barkscale)+1):
             av.append(0)
             st.append(0)
+        print("average analysis")
+        tempfiltered = LP48(buffer,51,sr)
         for i in range(len(buffer)):
-            av[0]+=abs(LP48(buffer,51,sr)[i])/len(buffer)
-            av[-1]+=abs((HP48(buffer,19500,sr)[i])/len(buffer))
-        for i in range(len(self.barkscale)-1):
-            for j in range(len(buffer)):
-                av[i+1]+=abs(LP48(HP48(buffer,barkscale[i],sr),barkscale[i]+1,sr)[j])/len(buffer)
+            print("0 / "+str(len(self.barkscale))+" - "+str(i)+" / "+str(len(buffer)))
+            
+            
+            av[0]+=abs(tempfiltered[i]/len(buffer))
+        
+        tempfiltered = HP48(buffer,19500,sr)   
         for i in range(len(buffer)):
-            st[0]+=(abs(LP48(buffer,51,sr)[i])-av[0])/len(buffer)
-            st[-1]+=(abs((HP48(buffer,19500,sr)[i])-av[-1])/len(buffer))
+            print("1 / "+str(len(self.barkscale))+" - "+str(i)+" / "+str(len(buffer)))
+            
+            av[-1]+=abs(tempfiltered[i]/len(buffer))
         for i in range(len(self.barkscale)-1):
+            tempfiltered=LP48(HP48(buffer,barkscale[i],sr),barkscale[i]+1,sr)
             for j in range(len(buffer)):
-                st[i+1]+=abs(LP48(HP48(buffer,barkscale[i],sr),barkscale[i]+1,sr)[j]-av[i+1])/len(buffer)
+                print(str(i+2)+" / "+str(len(self.barkscale))+" - "+str(j)+" / "+str(len(buffer)))
+                av[i+1]+=abs(tempfiltered[j])/len(buffer)
+        print("standard deviation analysis")
+        tempfiltered = LP48(buffer,51,sr)
+        for i in range(len(buffer)):
+            st[0]+=abs(abs(tempfiltered[i])-av[0])/len(buffer)
+            print("0 / "+str(len(self.barkscale))+" - "+str(i)+" / "+str(len(buffer)))
+        tempfiltered = HP48(buffer,19500,sr)
+        for i in range(len(buffer)):
+            print("1 / "+str(len(self.barkscale))+" - "+str(i)+" / "+str(len(buffer)))
+            st[-1]+=(abs(abs(tempfiltered[i])-av[-1])/len(buffer))
+        for i in range(len(self.barkscale)-1):
+            tempfiltered = LP48(HP48(buffer,barkscale[i],sr),barkscale[i]+1,sr)
+            for j in range(len(buffer)):
+                print(str(i+2)+" / "+str(len(self.barkscale))+" - "+str(j)+" / "+str(len(buffer)))
+                st[i+1]+=abs(abs(tempfiltered[j])-av[i+1])/len(buffer)
         obj.append(av)
         obj.append(st)
         return obj
@@ -179,7 +206,9 @@ class MyForm(wx.Frame):
             return new_buffer
         obj=[]
         temp = []
+        print("Generating Master Buffer")
         for i in range(len(originalbuffer)):
+            print("0 / "+str(len(barkscale))+str(i)+"/"+str(len(originalbuffer))) 
             new_buffer=LP48(originalbuffer,barkscale[0],originalsr)[i]
             if (originalbuffer[i]>0):
                 temp.append((new_buffer[i]-originalaverage[0])*standardRatio[0]+referenceaverage[0])
@@ -188,8 +217,10 @@ class MyForm(wx.Frame):
             elif (originalbuffer[i]==0):
                 temp.append(0)
         for i in range(len(self.barkscale)-1):
+            
             new_buffer = LP48(HP48(originalbuffer,barkscale[i],originalsr),barkscale[i+1],originalsr)
             for j in range(len(originalbuffer)):
+                print(str(i+1)+" / "+str(len(barkscale))+str(j)+"/"+str(len(originalbuffer))) 
                 if (new_buffer[i]>0):
                     temp.append((new_buffer[i]-originalaverage[i+1])*standardRatio[i+1]+referenceaverage[i+1])
                 elif (new_buffer[i]<0):
@@ -197,6 +228,7 @@ class MyForm(wx.Frame):
                 elif (new_buffer[i]==0):
                     temp.append(0)
         for i in range(len(originalbuffer)):
+            print(str(len(barkscale))+" / "+str(len(barkscale))+str(i)+"/"+str(len(originalbuffer))) 
             new_buffer=HP48(originalbuffer,barkscale[0],originalsr)[i]
             if (new_buffer[i]>0):
                 temp[i]+=((new_buffer[i]-originalaverage[-1])*standardRatio[-1]+referenceaverage[-1])
@@ -287,13 +319,15 @@ class MyForm(wx.Frame):
                 for i in range(len(a[1])):
                     mid.append(a[1][i])
                     side.append(0)
+            print("Reference Analysis Sequence 1/2")
             temp_mid=self.analysebuffer(mid, a[0])
+            print("Reference Analysis Sequence 2/2")
             temp_side=self.analysebuffer(side, a[0])
             for i in range(len(self.referencepath)):
                 self.mid_averages+=temp_mid[0][i]/len(self.referancepath)
                 self.mid_standard_deviations+=temp_mid[1][i]/len(self.referancepath)
-                self.side_averages+=temp_mid[0][i]/len(self.referancepath)
-                self.side_standard_deviations+=temp_mid[1][i]/len(self.referancepath)
+                self.side_averages+=temp_side[0][i]/len(self.referancepath)
+                self.side_standard_deviations+=temp_side[1][i]/len(self.referancepath)
         for file in self.originalpath:
             a=read(file)
             left = []
@@ -316,13 +350,15 @@ class MyForm(wx.Frame):
                 for i in range(len(a[1])):
                     mid.append(a[1][i])
                     side.append(0)
+            print("Original Track Analysis Sequence 1/2")
             temp_mid=self.analysebuffer(mid, a[0])
+            print("Original Track Analysis Sequence 2/2")
             temp_side=self.analysebuffer(side, a[0])
             
             mid_averages=temp_mid[0]
             mid_standard_deviations=temp_mid[1]
-            side_averages=temp_mid[0]
-            side_standard_deviations=temp_mid[1]
+            side_averages=temp_side[0]
+            side_standard_deviations=temp_side[1]
             for i in range(len(self.mid_averages)):
                 mid_average_ratio.append(self.mid_averages[i]/mid_averages[i])
                 mid_standard_ratio.append(self.mid_standard_deviations[i]/mid_standard_deviations[i])
